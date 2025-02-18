@@ -17,7 +17,7 @@ import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.service.RoomService;
 
 @RestController
-@RequestMapping(name = "/rooms", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/rooms", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoomController {
 	private final RoomService roomService;
 
@@ -32,8 +32,8 @@ public class RoomController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Room> findRoomById(@PathVariable("id") Integer id) {
-		Room foundRoom = roomService.findRoomById(id);
+	public ResponseEntity<Room> findRoomById(@PathVariable("id") String id) {
+		Room foundRoom = roomService.findRoomById(Integer.parseInt(id));
 		return ResponseEntity.ok().body(foundRoom);
 	}
 
@@ -44,14 +44,14 @@ public class RoomController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Room> updateRoom(@PathVariable("id") Integer id, @RequestBody Room room) {
-		Room updatedRoom = roomService.updateRoom(id, room);
+	public ResponseEntity<Room> updateRoom(@PathVariable("id") String id, @RequestBody Room room) {
+		Room updatedRoom = roomService.updateRoom(Integer.parseInt(id), room);
 		return ResponseEntity.ok().body(updatedRoom);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteRoom(@PathVariable("id") Integer id) {
-		roomService.deleteRoom(id);
+	public ResponseEntity<Void> deleteRoom(@PathVariable("id") String id) {
+		roomService.deleteRoom(Integer.parseInt(id));
 		return ResponseEntity.noContent().build();
 	}
 }

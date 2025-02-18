@@ -16,11 +16,11 @@ public class RoomService {
 	}
 
 	public List<Room> findAllRooms() {
-		return null;
+		return roomRepository.findAll();
 	}
 
 	public Room findRoomById(Integer id) {
-		return roomRepository.findById(id).orElseThrow();
+		return roomRepository.findById(id).orElse(null);
 	}
 
 	public Room createRoom(Room room) {
@@ -34,7 +34,11 @@ public class RoomService {
 			System.out.println("Not found");
 		}
 
-		return roomRepository.save(room);
+		roomFound.setName(room.getName());
+		roomFound.setRoomStatus(room.getRoomStatus());
+		roomFound.setCapacity(room.getCapacity());
+
+		return roomRepository.save(roomFound);
 	}
 
 	public void deleteRoom(Integer id) {
