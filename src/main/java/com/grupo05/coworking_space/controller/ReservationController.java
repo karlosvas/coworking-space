@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.grupo05.coworking_space.dto.ReservationDTO;
-import com.grupo05.coworking_space.model.Reservation;
 import com.grupo05.coworking_space.service.ReservationService;
 
 @RestController
@@ -39,14 +38,14 @@ public class ReservationController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ReservationDTO> createReservation(@RequestBody Reservation reservation) {
+	public ResponseEntity<ReservationDTO> createReservation(@RequestBody ReservationDTO reservation) {
 		ReservationDTO createdReservation = reservationService.createReservation(reservation);
 		return ResponseEntity.ok().body(createdReservation);
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<ReservationDTO> updateReservation(@PathVariable("id") int id,
-			@RequestBody Reservation reservation) {
+			@RequestBody ReservationDTO reservation) {
 		ReservationDTO updatedReservation = reservationService.updateResevation(reservation, id);
 		return ResponseEntity.ok().body(updatedReservation);
 	}

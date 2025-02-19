@@ -8,66 +8,50 @@ import org.springframework.stereotype.Service;
 import com.grupo05.coworking_space.dto.ReservationDTO;
 import com.grupo05.coworking_space.model.Reservation;
 import com.grupo05.coworking_space.repository.ReservationRepository;
+import com.grupo05.coworking_space.mapper.ReservationMapper;
 
 @Service
 public class ReservationService {
 
     private ReservationRepository reservationRepository;
+    private ReservationMapper reservationMapper;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationMapper reservationMapper) {
         this.reservationRepository = reservationRepository;
+        this.reservationMapper = reservationMapper;
     }
 
-    public ReservationDTO createReservation(Reservation reservation) {
+    public ReservationDTO createReservation(ReservationDTO reservationDTO) {
+        Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
         Reservation newReserve = reservationRepository.save(reservation);
-        ReservationDTO reservationDTO = convertToDTO(newReserve);
-        return reservationDTO;
+        return reservationMapper.convertToDTO(newReserve);
     }
 
     public ReservationDTO findReservationByID(int id) {
         Reservation reservation = reservationRepository.findById(id).get();
-        ReservationDTO reservationDTO = convertToDTO(reservation);
-        return reservationDTO;
+        return reservationMapper.convertToDTO(reservation);
     }
 
     public List<ReservationDTO> findAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
-                .map(this::convertToDTO)
+                .map(reservationMapper::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public ReservationDTO updateResevation(Reservation reservation, int id) {
-        Reservation newReservation = reservationRepository.findById(id).get();
-        newReservation.setDateInit(reservation.getDateInit());
-        newReservation.setDateEnd(reservation.getDateEnd());
-        newReservation.setDescription(reservation.getDescription());
+    public ReservationDTO updateResevation(ReservationDTO reservationDTO, int id) {
+        Reservation updateReservation = reservationRepository.findById(id).get();
+        updateReservation.setDateInit(reservationDTO.getDateInit());
+        updateReservation.setDateEnd(reservationDTO.getDateEnd());
+        updateReservation.setReserveStatus(reservationDTO.getReserveStatus());
+        updateReservation.setDescription(reservationDTO.getDescription());
 
-        Reservation saveReserve = reservationRepository.save(reservation);
-        ReservationDTO reservationDTO = convertToDTO(saveReserve);
-        return reservationDTO;
+        Reservation savedReservation = reservationRepository.save(updateReservation);
+        return reservationMapper.convertToDTO(savedReservation);
     }
 
     public void deleteReservation(int id) {
         reservationRepository.deleteById(id);
     }
 
-    public ReservationDTO convertToDTO(Reservation reservation) {
-        return new ReservationDTO(
-                reservation.getId(),
-                reservation.getDateInit(),
-                reservation.getDateEnd(),
-                reservation.getReserveStatus(),
-                reservation.getDescription());
-    }
-
-    public Reservation convertToEntity(ReservationDTO reservationDTO) {
-        Reservation reservation = new Reservation();
-        reservation.setId(reservationDTO.getId());
-        reservation.setDateInit(reservationDTO.getDateInit());
-        reservation.setDateEnd(reservationDTO.getDateEnd());
-        reservation.setReserveStatus(reservationDTO.getReserveStatus());
-        reservation.setDescription(reservationDTO.getDescripcion());
-        return reservation;
-    }
 }

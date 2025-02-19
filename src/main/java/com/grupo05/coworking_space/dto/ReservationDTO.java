@@ -17,5 +17,5 @@ public class ReservationDTO implements Serializable {
     private Date dateInit;
     private Date dateEnd;
     private StateReservation reserveStatus;
-    private String descripcion;
+    private String description;
 }
