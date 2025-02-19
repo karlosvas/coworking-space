@@ -31,3 +31,25 @@ build/
 
 ### VS Code ###
 .vscode/
+.code-workspace
+
+### Eclipse ###
+.settings/
+bin/
+tmp/
+.metadata
+.classpath
+.project
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+
+### OS X ###
+.DS_Store
