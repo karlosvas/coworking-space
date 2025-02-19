@@ -1,7 +1,15 @@
 package com.grupo05.coworking_space.model;
 
 import com.grupo05.coworking_space.enums.RoomStatus;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity(name = "room")
@@ -11,7 +19,7 @@ public class Room {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "id", unique = true)
-	private Integer id;
+	private int id;
 
 	@Column(name = "name", nullable = false, length = 20)
 	private String name;
@@ -21,5 +29,5 @@ public class Room {
 	private RoomStatus roomStatus;
 
 	@Column(name = "capacity", nullable = false)
-	private Integer capacity;
+	private int capacity;
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.grupo05.coworking_space.model.Room;
+import com.grupo05.coworking_space.dto.RoomDTO;
 import com.grupo05.coworking_space.service.RoomService;
 
 @RestController
@@ -26,26 +26,26 @@ public class RoomController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Room>> findAllRooms() {
-		List<Room> allRooms = roomService.findAllRooms();
+	public ResponseEntity<List<RoomDTO>> findAllRooms() {
+		List<RoomDTO> allRooms = roomService.findAllRooms();
 		return ResponseEntity.ok().body(allRooms);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Room> findRoomById(@PathVariable("id") String id) {
-		Room foundRoom = roomService.findRoomById(Integer.parseInt(id));
+	public ResponseEntity<RoomDTO> findRoomById(@PathVariable("id") String id) {
+		RoomDTO foundRoom = roomService.findRoomById(Integer.parseInt(id));
 		return ResponseEntity.ok().body(foundRoom);
 	}
 
 	@PostMapping
-	public ResponseEntity<Room> createRoom(@RequestBody Room room) {
-		Room createdRoom = roomService.createRoom(room);
+	public ResponseEntity<RoomDTO> createRoom(@RequestBody RoomDTO room) {
+		RoomDTO createdRoom = roomService.createRoom(room);
 		return ResponseEntity.ok().body(createdRoom);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Room> updateRoom(@PathVariable("id") String id, @RequestBody Room room) {
-		Room updatedRoom = roomService.updateRoom(Integer.parseInt(id), room);
+	public ResponseEntity<RoomDTO> updateRoom(@PathVariable("id") String id, @RequestBody RoomDTO room) {
+		RoomDTO updatedRoom = roomService.updateRoom(Integer.parseInt(id), room);
 		return ResponseEntity.ok().body(updatedRoom);
 	}
 
