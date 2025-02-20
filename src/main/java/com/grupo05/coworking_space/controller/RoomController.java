@@ -1,20 +1,15 @@
 package com.grupo05.coworking_space.controller;
 
-import java.util.List;
-
+import com.grupo05.coworking_space.dto.RoomDTO;
+import com.grupo05.coworking_space.enums.ApiSuccess;
+import com.grupo05.coworking_space.service.RoomService;
+import com.grupo05.coworking_space.utils.DataResponse;
+import com.grupo05.coworking_space.utils.ResponseHandler;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.grupo05.coworking_space.dto.RoomDTO;
-import com.grupo05.coworking_space.service.RoomService;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/rooms", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,32 +21,40 @@ public class RoomController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<RoomDTO>> findAllRooms() {
+	public ResponseEntity<DataResponse> findAllRooms() {
 		List<RoomDTO> allRooms = roomService.findAllRooms();
-		return ResponseEntity.ok().body(allRooms);
+
+		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_RETRIEVED, allRooms);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<RoomDTO> findRoomById(@PathVariable("id") String id) {
-		RoomDTO foundRoom = roomService.findRoomById(Integer.parseInt(id));
-		return ResponseEntity.ok().body(foundRoom);
+	public ResponseEntity<DataResponse> findRoomById(@PathVariable("id") int id) {
+		RoomDTO foundRoom = roomService.findRoomById(id);
+
+		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_RETRIEVED, foundRoom);
 	}
 
 	@PostMapping
-	public ResponseEntity<RoomDTO> createRoom(@RequestBody RoomDTO room) {
+	public ResponseEntity<DataResponse> createRoom(@RequestBody RoomDTO room) {
 		RoomDTO createdRoom = roomService.createRoom(room);
-		return ResponseEntity.ok().body(createdRoom);
+
+		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_CREATED, createdRoom);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<RoomDTO> updateRoom(@PathVariable("id") String id, @RequestBody RoomDTO room) {
-		RoomDTO updatedRoom = roomService.updateRoom(Integer.parseInt(id), room);
-		return ResponseEntity.ok().body(updatedRoom);
+	public ResponseEntity<DataResponse> updateRoom(
+		@PathVariable("id") int id,
+		@RequestBody RoomDTO room
+	)
+	{
+		RoomDTO updatedRoom = roomService.updateRoom(id, room);
+		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_UPDATED, updatedRoom);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteRoom(@PathVariable("id") String id) {
-		roomService.deleteRoom(Integer.parseInt(id));
-		return ResponseEntity.noContent().build();
+	public ResponseEntity<DataResponse> deleteRoom(@PathVariable("id") int id) {
+		roomService.deleteRoom(id);
+
+		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REMOVED, null);
 	}
 }
