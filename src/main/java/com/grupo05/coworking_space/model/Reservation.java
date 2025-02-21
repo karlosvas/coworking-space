@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -49,12 +51,13 @@ public class Reservation {
     @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres")
     @Column(name = "description", nullable = true)
     private String description;
+   
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    private User user;
 
-    // @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    // @JoinColumn(name = "id_usuario", referencedColumnName = "id")
-    // private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "room_id", referencedColumnName = "room_id", nullable = false)
+    private Room room;  
 
-    // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    // @JoinColumn(name = "id_sala", referencedColumnName = "id")
-    // private List<Salas> salas;
 }
