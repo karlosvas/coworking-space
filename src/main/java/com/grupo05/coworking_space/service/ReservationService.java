@@ -44,18 +44,13 @@ public class ReservationService {
             }
             return reservationMapper.convertToDTO(reservation.get());
         } catch (Exception e) {
-
             throw new RuntimeException("Error al buscar la reserva: " + e.getMessage());
         }
     }
 
-    // findAll nunca devuelbe null por lo que no es necesario hacer la validación,
-    // si esta vacio devuelbe una lista vacia
     public List<ReservationDTO> findAllReservations() {
         try {
             List<Reservation> reservations = reservationRepository.findAll();
-            if (reservations.isEmpty())
-                throw new RuntimeException("No hay reservas en la base de datos");
             return reservations.stream()
                     .map(reservationMapper::convertToDTO)
                     .collect(Collectors.toList());
