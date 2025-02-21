@@ -3,7 +3,7 @@ package com.grupo05.coworking_space.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.grupo05.coworking_space.enums.StateReservation;
+import com.grupo05.coworking_space.enums.ReservationStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +16,6 @@ public class ReservationDTO implements Serializable {
     private final int id;
     private Date dateInit;
     private Date dateEnd;
-    private StateReservation reserveStatus;
+    private ReservationStatus reserveStatus;
     private String description;
 }

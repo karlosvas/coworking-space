@@ -17,7 +17,7 @@ import lombok.Setter;
 import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import com.grupo05.coworking_space.enums.StateReservation;
+import com.grupo05.coworking_space.enums.ReservationStatus;
 
 @Entity
 @Table(name = "RESERVATION")
@@ -44,7 +44,7 @@ public class Reservation {
     @NotNull(message = "El estado no puede estar vacío")
     @Enumerated(EnumType.STRING)
     @Column(name = "reserve_status", nullable = true)
-    private StateReservation reserveStatus;
+    private ReservationStatus reserveStatus;
 
     @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres")
     @Column(name = "description", nullable = true)

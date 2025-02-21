@@ -17,7 +17,7 @@ import com.grupo05.coworking_space.dto.ReservationDTO;
 import com.grupo05.coworking_space.service.ReservationService;
 
 @RestController
-@RequestMapping(value = "/api/reservation", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/reservations", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ReservationController {
 	private final ReservationService reservationService;
 

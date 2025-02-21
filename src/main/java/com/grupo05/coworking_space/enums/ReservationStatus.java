@@ -3,7 +3,7 @@ package com.grupo05.coworking_space.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum StateReservation {
+public enum ReservationStatus {
     PENDING("Pending"),
     CONFIRMED("Confirmed"),
     CANCELED("Canceled"),
@@ -11,13 +11,13 @@ public enum StateReservation {
 
     private String state;
 
-    StateReservation(String state) {
+    ReservationStatus(String state) {
         this.state = state;
     }
 
     @JsonCreator
-    public static StateReservation fromString(String value) {
-        for (StateReservation status : StateReservation.values()) {
+    public static ReservationStatus fromString(String value) {
+        for (ReservationStatus status : ReservationStatus.values()) {
             if (status.getState().equalsIgnoreCase(value))
                 return status;
         }
