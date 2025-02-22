@@ -18,7 +18,7 @@ import lombok.Setter;
 @Builder
 @Schema(description = "Data Transfer Object para Salas")
 public class RoomDTO implements Serializable {
-	@Schema(description = "Identificador único para sala", example = "1", type = "integer", required = true)
+	@Schema(description = "Identificador único para sala", type = "integer", required = false, hidden = true)
 	private int id;
 
 	@Schema(description = "Nombre de sala", example = "Sala de reuniones", type = "string", required = true)

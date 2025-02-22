@@ -57,4 +57,11 @@ public class Reservation {
     // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     // @JoinColumn(name = "id_sala", referencedColumnName = "id")
     // private List<Salas> salas;
+
+    public Reservation(Date dateInit, Date dateEnd, ReservationStatus reserveStatus, String description) {
+        this.dateInit = dateInit;
+        this.dateEnd = dateEnd;
+        this.reserveStatus = reserveStatus;
+        this.description = description;
+    }
 }

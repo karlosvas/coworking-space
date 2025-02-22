@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Schema(description = "Data Transfer Object para Reservas")
 public class ReservationDTO implements Serializable {
-    @Schema(description = "Identificador único para reservas", example = "1", type = "integer", required = true)
+    @Schema(description = "Identificador único para reservas", type = "integer", required = false, hidden = true)
     private final int id;
 
     @Schema(description = "Fecha y hora de inicio de la reserva", example = "2025-02-21T10:00:00", format = "date-time", required = true)
