@@ -1,6 +1,6 @@
 package com.grupo05.coworking_space.util;
 
-import com.grupo05.coworking_space.model.Usuario;
+import com.grupo05.coworking_space.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,9 +43,9 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(Usuario usuario){
+    public String generateToken(User user){
         Map<String,Object> claims = new HashMap<>();
-        return createToken(claims,usuario.getUsername());
+        return createToken(claims, user.getUsername());
     }
 
     private String createToken(Map<String,Object> claims,String subject){

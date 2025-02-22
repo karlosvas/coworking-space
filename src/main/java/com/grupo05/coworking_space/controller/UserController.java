@@ -1,8 +1,7 @@
 package com.grupo05.coworking_space.controller;
 
-import com.grupo05.coworking_space.model.Usuario;
+import com.grupo05.coworking_space.model.User;
 import com.grupo05.coworking_space.repository.UserRepository;
-import com.grupo05.coworking_space.service.UserDetailsServiceImpl;
 import com.grupo05.coworking_space.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -25,31 +24,31 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registrarUsuario(@RequestBody Usuario usuario){
-        Optional<Usuario> usuarioOptional = userRepository.findByUsername(usuario.getUsername());
+    public ResponseEntity<String> registrarUsuario(@RequestBody User user){
+        Optional<User> usuarioOptional = userRepository.findByUsername(user.getUsername());
         if(!usuarioOptional.isEmpty()){
             return ResponseEntity.ok("Ya estas registrado");
         }
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        userRepository.save(usuario);
-        return ResponseEntity.ok("Usuario registrado exitosamente");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+        return ResponseEntity.ok("User registrado exitosamente");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUsuario(@RequestBody Usuario usuarioRequest) {
+    public ResponseEntity<String> loginUsuario(@RequestBody User userRequest) {
 
-        Optional<Usuario> usuarioOptional = userRepository.findByUsername(usuarioRequest.getUsername());
+        Optional<User> usuarioOptional = userRepository.findByUsername(userRequest.getUsername());
         if (usuarioOptional.isEmpty()) {
-            return ResponseEntity.status(401).body("Usuario no encontrado");
+            return ResponseEntity.status(401).body("User no encontrado");
         }
 
-        Usuario usuario = usuarioOptional.get();
+        User user = usuarioOptional.get();
 
-        if (!passwordEncoder.matches(usuarioRequest.getPassword(), usuario.getPassword())) {
+        if (!passwordEncoder.matches(userRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.status(401).body("Contraseña incorrecta");
         }
 
-        String token = jwtUtil.generateToken(usuario);
+        String token = jwtUtil.generateToken(user);
 
         return ResponseEntity.ok(token);
     }
