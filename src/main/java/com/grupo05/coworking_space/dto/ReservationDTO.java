@@ -2,6 +2,7 @@ package com.grupo05.coworking_space.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.grupo05.coworking_space.enums.ReservationStatus;
 
@@ -31,4 +32,10 @@ public class ReservationDTO implements Serializable {
 
     @Schema(description = "Descripcion de la reserva", example = "Reserva de sala de reuniones para presentacion de proyecto", type = "string", required = false)
     private String description;
+
+    @Schema(description = "Identificador único para usuarios FK", type = "integer", required = true)
+    private int userFK;
+
+    @Schema(description = "Identificador único para salas FK", type = "array", required = true)
+    private List<Integer> roomsFK;
 }

@@ -10,10 +10,15 @@ import com.grupo05.coworking_space.dto.ReservationDTO;
 import com.grupo05.coworking_space.enums.ApiError;
 import com.grupo05.coworking_space.exception.RequestException;
 import com.grupo05.coworking_space.model.Reservation;
+import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.repository.ReservationRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.grupo05.coworking_space.mapper.ReservationMapper;
 
 @Service
+@Slf4j
 public class ReservationService {
 
     private ReservationRepository reservationRepository;
@@ -30,8 +35,18 @@ public class ReservationService {
                 throw new RequestException(ApiError.BAD_REQUEST);
             }
             Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
+            // Foren keys bidireccionales
+            // for (Room room : reservation.getRoom()) {
+            // room.setReservation(reservation);
+            // }
+
+            log.info("Reserva creada: {}" + reservation);
             Reservation savedReservation = reservationRepository.save(reservation);
             return reservationMapper.convertToDTO(savedReservation);
+        } catch (RequestException e) {
+            // Puede ahver un error en la validación de los datos en convertToEntity
+            // por eso se captura la excepción y se lanza nuevamente
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error en la creación de la reserva: " + e.getMessage());
         }
@@ -66,9 +81,10 @@ public class ReservationService {
         try {
             if (reservationDTO == null)
                 throw new RequestException(ApiError.BAD_REQUEST);
+
             ReservationDTO optionalReservation = this.findReservationByID(id);
             Reservation updateReservation = reservationMapper.convertToEntity(optionalReservation);
-
+            updateReservation.setId(id);
             updateReservation.setDateInit(reservationDTO.getDateInit());
             updateReservation.setDateEnd(reservationDTO.getDateEnd());
             updateReservation.setReserveStatus(reservationDTO.getReserveStatus());
