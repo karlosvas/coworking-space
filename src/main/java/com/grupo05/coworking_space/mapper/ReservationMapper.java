@@ -18,7 +18,6 @@ public class ReservationMapper {
 
     public Reservation convertToEntity(ReservationDTO reservationDTO) {
         return new Reservation(
-                reservationDTO.getId(),
                 reservationDTO.getDateInit(),
                 reservationDTO.getDateEnd(),
                 reservationDTO.getReserveStatus(),

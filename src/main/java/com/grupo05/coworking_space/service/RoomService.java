@@ -61,9 +61,11 @@ public class RoomService {
 			Throwable cause = ex.getCause();
 			Throwable rootCause = cause.getCause();
 			if (rootCause instanceof ConstraintViolationException ||
-				rootCause instanceof DataIntegrityViolationException) throw new RequestException(
-				ApiError.CONFLICT);
-			else throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
+					rootCause instanceof DataIntegrityViolationException)
+				throw new RequestException(
+						ApiError.CONFLICT);
+			else
+				throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
 		} catch (DataAccessException ex) {
 			throw new RequestException(ApiError.DATABASE_ERROR);
 		} catch (Exception ex) {
@@ -86,9 +88,11 @@ public class RoomService {
 			Throwable cause = ex.getCause();
 			Throwable rootCause = cause.getCause();
 			if (cause instanceof ConstraintViolationException ||
-				rootCause instanceof DataIntegrityViolationException) throw new RequestException(
-				ApiError.CONFLICT);
-			else throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
+					rootCause instanceof DataIntegrityViolationException)
+				throw new RequestException(
+						ApiError.CONFLICT);
+			else
+				throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
 		} catch (DataAccessException ex) {
 			throw new RequestException(ApiError.DATABASE_ERROR);
 		} catch (Exception ex) {
@@ -107,9 +111,11 @@ public class RoomService {
 			Throwable cause = ex.getCause();
 			Throwable rootCause = cause.getCause();
 			if (cause instanceof ConstraintViolationException ||
-				rootCause instanceof DataIntegrityViolationException) throw new RequestException(
-				ApiError.CONFLICT);
-			else throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
+					rootCause instanceof DataIntegrityViolationException)
+				throw new RequestException(
+						ApiError.CONFLICT);
+			else
+				throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
 		} catch (DataAccessException ex) {
 			throw new RequestException(ApiError.DATABASE_ERROR);
 		} catch (Exception ex) {

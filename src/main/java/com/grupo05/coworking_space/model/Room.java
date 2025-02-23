@@ -12,13 +12,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Entity(name = "room")
-@Table(name = "rooms")
+@Entity(name = "ROOM")
+@Table(name = "ROOM")
 @Data
 public class Room {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "id", unique = true)
+	@Column(name = "room_id", unique = true)
 	private int id;
 
 	@Column(name = "name", nullable = false, length = 20)
@@ -30,4 +30,10 @@ public class Room {
 
 	@Column(name = "capacity", nullable = false)
 	private int capacity;
+
+	public Room(String name, RoomStatus roomStatus, int capacity) {
+		this.name = name;
+		this.roomStatus = roomStatus;
+		this.capacity = capacity;
+	}
 }
