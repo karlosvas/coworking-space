@@ -2,7 +2,6 @@ package com.grupo05.coworking_space.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +21,6 @@ import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,12 +41,7 @@ public class ReservationController {
 	@SwaggerApiResponses
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Lista de reservas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-			@ApiResponse(responseCode = "204", description = "No hay ninguna reserva", headers = {
-					@Header(name = "Connection", description = "keep-alive"),
-					@Header(name = "Content-Type", description = "application/json"),
-					@Header(name = "Date", description = "Sat, 22 Feb 2025 10:33:10 GMT"),
-					@Header(name = "Keep-Alive", description = "timeout=60")
-			}, content = @Content)
+			@ApiResponse(responseCode = "204", description = "No hay ninguna reserva", content = @Content)
 	})
 	@GetMapping
 	public ResponseEntity<DataResponse> findAllReservations() {
@@ -71,7 +64,7 @@ public class ReservationController {
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_RETRIEVED, foundReservation);
 	}
 
-	@Operation(summary = "Crear reserva", description = "Crea una nueva reserva con la informacion enviada")
+	@Operation(summary = "Crear reserva", description = "Crea una nueva reserva con la informacion enviada, los FK deven ser valores existentes en la base de datos")
 	@SwaggerApiResponses
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Reserva creada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
@@ -98,12 +91,7 @@ public class ReservationController {
 	@Operation(summary = "Eliminar reserva", description = "Elimina una reserva por su ID")
 	@SwaggerApiResponses
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "Reserva eliminada", headers = {
-					@Header(name = "Connection", description = "keep-alive"),
-					@Header(name = "Content-Type", description = "application/json"),
-					@Header(name = "Date", description = "Sat, 22 Feb 2025 10:33:10 GMT"),
-					@Header(name = "Keep-Alive", description = "timeout=60")
-			}, content = @Content)
+			@ApiResponse(responseCode = "204", description = "Reserva eliminada", content = @Content)
 	})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<DataResponse> deleteRoom(@PathVariable("id") int id) {

@@ -1,12 +1,13 @@
 package com.grupo05.coworking_space.model;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "users")
+@Entity(name = "USER")
+@Table(name = "USER", schema = "coworking_space")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -20,7 +21,6 @@ public class User {
 
     @Column(name = "username", nullable = false, length = 50)
     private String username;
-
 
     @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;

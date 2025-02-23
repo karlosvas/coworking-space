@@ -8,14 +8,20 @@ import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,12 +40,7 @@ public class RoomController {
 	@SwaggerApiResponses
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Lista de salas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-			@ApiResponse(responseCode = "204", description = "No hay ninguna sala", headers = {
-					@Header(name = "Connection", description = "keep-alive"),
-					@Header(name = "Content-Type", description = "application/json"),
-					@Header(name = "Date", description = "Sat, 22 Feb 2025 10:33:10 GMT"),
-					@Header(name = "Keep-Alive", description = "timeout=60")
-			}, content = @Content)
+			@ApiResponse(responseCode = "204", description = "No hay ninguna sala", content = @Content)
 	})
 	@GetMapping
 	public ResponseEntity<DataResponse> findAllRooms() {
@@ -91,12 +92,7 @@ public class RoomController {
 	@Operation(summary = "Eliminar sala", description = "Elimina una sala por su ID")
 	@SwaggerApiResponses
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "Sala eliminada", headers = {
-					@Header(name = "Connection", description = "keep-alive"),
-					@Header(name = "Content-Type", description = "application/json"),
-					@Header(name = "Date", description = "Sat, 22 Feb 2025 10:33:10 GMT"),
-					@Header(name = "Keep-Alive", description = "timeout=60")
-			}, content = @Content)
+			@ApiResponse(responseCode = "204", description = "Sala eliminada", content = @Content)
 	})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<DataResponse> deleteRoom(@PathVariable("id") int id) {

@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -16,13 +17,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import com.grupo05.coworking_space.enums.ReservationStatus;
 
-@Entity
-@Table(name = "RESERVATION")
+@Entity(name = "RESERVATION")
+@Table(name = "RESERVATION", schema = "coworking_space")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -51,19 +56,23 @@ public class Reservation {
     @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres")
     @Column(name = "description", nullable = true)
     private String description;
-   
+
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id", referencedColumnName = "room_id", nullable = false)
-    private Room room;  
+    @OneToMany(mappedBy = "reservation")
+    private List<Room> room;
 
-    public Reservation(Date dateInit, Date dateEnd, ReservationStatus reserveStatus, String description) {
-        this.dateInit = dateInit;
-        this.dateEnd = dateEnd;
-        this.reserveStatus = reserveStatus;
-        this.description = description;
+    public int getUserFK() {
+        return user.getId();
+    }
+
+    public List<Integer> getRoomsFK() {
+        List<Integer> roomsFK = new ArrayList<>();
+        for (int i = 0; i < room.size(); i++) {
+            roomsFK.add(room.get(i).getId());
+        }
+        return roomsFK;
     }
 }

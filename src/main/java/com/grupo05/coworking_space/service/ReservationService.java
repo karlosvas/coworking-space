@@ -32,6 +32,10 @@ public class ReservationService {
             Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
             Reservation savedReservation = reservationRepository.save(reservation);
             return reservationMapper.convertToDTO(savedReservation);
+        } catch (RequestException e) {
+            // Puede ahver un error en la validación de los datos en convertToEntity
+            // por eso se captura la excepción y se lanza nuevamente
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error en la creación de la reserva: " + e.getMessage());
         }

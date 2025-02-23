@@ -1,5 +1,7 @@
 package com.grupo05.coworking_space.service;
 
+import com.grupo05.coworking_space.dto.UserDTO;
+import com.grupo05.coworking_space.mapper.UserMapper;
 import com.grupo05.coworking_space.model.User;
 import com.grupo05.coworking_space.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,8 +13,10 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private UserMapper userMapper;
 
-    public UserDetailsServiceImpl(UserRepository userRepository) {
+    public UserDetailsServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+        this.userMapper = userMapper;
         this.userRepository = userRepository;
     }
 
@@ -25,5 +29,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .build();
+    }
+
+    public UserDTO findUserById(int id) {
+        User user = userRepository.findById(id).orElse(null);
+        return userMapper.convertToDTO(user);
     }
 }
