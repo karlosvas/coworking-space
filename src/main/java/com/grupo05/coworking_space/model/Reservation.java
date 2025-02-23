@@ -1,5 +1,6 @@
 package com.grupo05.coworking_space.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,10 +14,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,18 +26,15 @@ import com.grupo05.coworking_space.enums.ReservationStatus;
 
 @Entity(name = "RESERVATION")
 @Table(name = "RESERVATION", schema = "coworking_space")
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reservation_id", nullable = false)
+    @Column(name = "reservation_id", unique = true)
     private int id;
 
     @NotNull(message = "Deve ingresar una fecha de inicio")
-    @Column(name = "init_date", nullable = false)
+    @Column(name = "start_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateInit;
 
@@ -50,7 +45,7 @@ public class Reservation {
 
     @NotNull(message = "El estado no puede estar vacío")
     @Enumerated(EnumType.STRING)
-    @Column(name = "reserve_status", nullable = true)
+    @Column(name = "reservation_status", nullable = false)
     private ReservationStatus reserveStatus;
 
     @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres")
@@ -61,7 +56,7 @@ public class Reservation {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "reservation")
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     private List<Room> room;
 
     public int getUserFK() {

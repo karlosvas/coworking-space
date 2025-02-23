@@ -27,7 +27,6 @@ public class RoomMapper {
 
 	public Room convertToEntity(RoomDTO roomDTO) {
 		Room room = new Room();
-		room.setId(roomDTO.getId());
 		room.setName(roomDTO.getName());
 		room.setRoomStatus(roomDTO.getRoomStatus());
 		room.setCapacity(roomDTO.getCapacity());

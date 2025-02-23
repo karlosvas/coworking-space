@@ -1,10 +1,11 @@
 package com.grupo05.coworking_space.config;
 
 import com.grupo05.coworking_space.filter.JwtRequestFilter;
-import com.grupo05.coworking_space.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.grupo05.coworking_space.utils.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,26 +18,34 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtRequestFilter jwtRequestFilter) throws Exception {
         http
-                .csrf(csrf->csrf.disable())
-                .authorizeHttpRequests(auth->
-                        auth.requestMatchers("/users/login","/users/register").permitAll()
-                                .anyRequest().authenticated())
-                .addFilterBefore(new JwtRequestFilter(jwtUtil,this.userDetailsService),
-                        UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/users/login", "/users/register",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**")
+                        .permitAll()
+                        .requestMatchers("/users/list").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtRequestFilter jwtRequestFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+        return new JwtRequestFilter(jwtUtil, userDetailsService);
     }
 }

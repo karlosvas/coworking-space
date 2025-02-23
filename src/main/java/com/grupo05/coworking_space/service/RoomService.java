@@ -61,7 +61,9 @@ public class RoomService {
 	public RoomDTO createRoom(RoomDTO room) {
 		try {
 			Room roomToSave = roomMapper.convertToEntity(room);
-			return roomMapper.convertToDTO(roomRepository.save(roomToSave));
+			Room savedRoom = roomRepository.save(roomToSave);
+			RoomDTO roomDTO = roomMapper.convertToDTO(savedRoom);
+			return roomDTO;
 		} catch (DataIntegrityViolationException ex) {
 			Throwable cause = ex.getCause();
 			Throwable rootCause = cause.getCause();

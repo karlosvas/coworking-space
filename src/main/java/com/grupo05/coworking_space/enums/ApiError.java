@@ -71,7 +71,11 @@ public enum ApiError {
 	ENDPOINT_NOT_FOUND(
 			HttpStatus.NOT_FOUND,
 			"Endpoint Not Found",
-			"Requested API endpoint does not exist.");
+			"Requested API endpoint does not exist."),
+	DUPLICATE_EMAIL(
+			HttpStatus.CONFLICT,
+			"Duplicate Email",
+			"Email already registered");
 
 	private final HttpStatus status;
 	private final String title;

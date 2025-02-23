@@ -19,13 +19,20 @@ public class UserMapper {
 
     public UserDTO convertToDTO(User user) {
         return new UserDTO(
-                user.getId(), user.getUsername(), user.getEmail(), user.getPassword());
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getRole());
     }
 
     public User convertToEntity(UserDTO userDTO) {
-        return new User(
-                userDTO.getId(),
-                userDTO.getUsername(), userDTO.getEmail(), userDTO.getPassword());
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+        user.setRole(userDTO.getRole());
+        return user;
     }
 
     public User getForeignKey(Integer userFK) {

@@ -9,7 +9,10 @@ import com.grupo05.coworking_space.model.Reservation;
 import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.model.User;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class ReservationMapper {
     private UserMapper userMapper;
     private RoomMapper roomMapper;
@@ -34,13 +37,14 @@ public class ReservationMapper {
         User user = userMapper.getForeignKey(reservationDTO.getUserFK());
         List<Room> rooms = roomMapper.getForeignKeys(reservationDTO.getRoomsFK());
 
-        return new Reservation(
-                reservationDTO.getId(),
-                reservationDTO.getDateInit(),
-                reservationDTO.getDateEnd(),
-                reservationDTO.getReserveStatus(),
-                reservationDTO.getDescription(),
-                user,
-                rooms);
+        Reservation reservation = new Reservation();
+        reservation.setDateInit(reservationDTO.getDateInit());
+        reservation.setDateEnd(reservationDTO.getDateEnd());
+        reservation.setReserveStatus(reservationDTO.getReserveStatus());
+        reservation.setDescription(reservationDTO.getDescription());
+        reservation.setUser(user);
+        reservation.setRoom(rooms);
+
+        return reservation;
     }
 }
