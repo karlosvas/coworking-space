@@ -19,13 +19,19 @@ import com.grupo05.coworking_space.enums.ApiSuccess;
 import com.grupo05.coworking_space.service.ReservationService;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -101,5 +107,27 @@ public class ReservationController {
 	public ResponseEntity<DataResponse> deleteRoom(@PathVariable("id") int id) {
 		reservationService.deleteReservation(id);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REMOVED, null);
+	}
+
+	@GetMapping("/filters")
+	public ResponseEntity<DataResponse> findReservationsBetweenDates(
+		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateInit,
+		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateEnd) {
+		LocalDateTime defaultDateInit = LocalDateTime.now().minusYears(1);
+		LocalDateTime defaultDateEnd = LocalDateTime.now().plusYears(1);
+
+		LocalDateTime start = dateInit != null ? dateInit : defaultDateInit;
+		LocalDateTime end = dateEnd != null ? dateEnd : defaultDateEnd;
+
+		if (start.isAfter(end)) {
+			throw new IllegalArgumentException("La fecha inicial no puede ser posterior a la fecha final");
+		}
+
+		List<ReservationDTO> allReserves = reservationService.findReservationsBetweenDates(start, end);
+
+		if (allReserves.isEmpty())
+			return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_NO_CONTENT, allReserves);
+
+		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_RETRIEVED, allReserves);
 	}
 }
