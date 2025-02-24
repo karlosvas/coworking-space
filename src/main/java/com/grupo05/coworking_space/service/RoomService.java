@@ -6,6 +6,9 @@ import com.grupo05.coworking_space.exception.RequestException;
 import com.grupo05.coworking_space.mapper.RoomMapper;
 import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.repository.RoomRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class RoomService {
 	private final RoomRepository roomRepository;
@@ -39,6 +43,7 @@ public class RoomService {
 	public RoomDTO findRoomById(int id) {
 		try {
 			Optional<Room> optionalRoom = roomRepository.findById(id);
+
 			if (optionalRoom.isEmpty()) {
 				throw new RequestException(ApiError.RECORD_NOT_FOUND);
 			}
@@ -56,14 +61,18 @@ public class RoomService {
 	public RoomDTO createRoom(RoomDTO room) {
 		try {
 			Room roomToSave = roomMapper.convertToEntity(room);
-			return roomMapper.convertToDTO(roomRepository.save(roomToSave));
+			Room savedRoom = roomRepository.save(roomToSave);
+			RoomDTO roomDTO = roomMapper.convertToDTO(savedRoom);
+			return roomDTO;
 		} catch (DataIntegrityViolationException ex) {
 			Throwable cause = ex.getCause();
 			Throwable rootCause = cause.getCause();
 			if (rootCause instanceof ConstraintViolationException ||
-				rootCause instanceof DataIntegrityViolationException) throw new RequestException(
-				ApiError.CONFLICT);
-			else throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
+					rootCause instanceof DataIntegrityViolationException)
+				throw new RequestException(
+						ApiError.CONFLICT);
+			else
+				throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
 		} catch (DataAccessException ex) {
 			throw new RequestException(ApiError.DATABASE_ERROR);
 		} catch (Exception ex) {
@@ -86,9 +95,11 @@ public class RoomService {
 			Throwable cause = ex.getCause();
 			Throwable rootCause = cause.getCause();
 			if (cause instanceof ConstraintViolationException ||
-				rootCause instanceof DataIntegrityViolationException) throw new RequestException(
-				ApiError.CONFLICT);
-			else throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
+					rootCause instanceof DataIntegrityViolationException)
+				throw new RequestException(
+						ApiError.CONFLICT);
+			else
+				throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
 		} catch (DataAccessException ex) {
 			throw new RequestException(ApiError.DATABASE_ERROR);
 		} catch (Exception ex) {
@@ -107,9 +118,11 @@ public class RoomService {
 			Throwable cause = ex.getCause();
 			Throwable rootCause = cause.getCause();
 			if (cause instanceof ConstraintViolationException ||
-				rootCause instanceof DataIntegrityViolationException) throw new RequestException(
-				ApiError.CONFLICT);
-			else throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
+					rootCause instanceof DataIntegrityViolationException)
+				throw new RequestException(
+						ApiError.CONFLICT);
+			else
+				throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
 		} catch (DataAccessException ex) {
 			throw new RequestException(ApiError.DATABASE_ERROR);
 		} catch (Exception ex) {
