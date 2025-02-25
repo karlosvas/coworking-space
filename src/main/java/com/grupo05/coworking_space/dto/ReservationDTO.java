@@ -1,15 +1,14 @@
 package com.grupo05.coworking_space.dto;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-
 import com.grupo05.coworking_space.enums.ReservationStatus;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,11 +18,11 @@ public class ReservationDTO implements Serializable {
     @Schema(description = "Identificador único para reservas", type = "integer", required = false, hidden = true)
     private final int id;
 
-    @Schema(description = "Fecha y hora de inicio de la reserva", example = "2025-02-21T10:00:00", format = "date-time", required = true)
-    private Date dateInit;
+	@Schema(description = "Fecha y hora de inicio de la reserva", example = "2025-02-21T10:00:00", format = "date-time", required = true)
+	private LocalDateTime dateInit;
 
-    @Schema(description = "Fecha y hora de fin de la reserva", example = "2025-02-21T12:00:00", format = "date-time", required = true)
-    private Date dateEnd;
+	@Schema(description = "Fecha y hora de fin de la reserva", example = "2025-02-21T12:00:00", format = "date-time", required = true)
+	private LocalDateTime dateEnd;
 
     @Schema(description = "Estado de la reserva del enum ReservationStatus", allowableValues = {
             "PENDING", "CONFIRMED", "CANCELED", "COMPLETED",
