@@ -17,9 +17,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 
 	boolean existsById(int id);
 
-	@Query("SELECT r FROM RESERVATION r WHERE r.dateInit <= :dateEnd AND r.dateEnd >= :dateInit")
+	@Query(value = "SELECT * FROM coworking_space.reservation r WHERE r.start_date <= :dateEnd AND r.end_date >= :dateInit", nativeQuery = true)
 	List<Reservation> findReservationsBetweenDates(
-		@Param("dateInit") LocalDateTime dateInit,
-		@Param("dateEnd") LocalDateTime dateEnd
-	);
+			@Param("dateInit") LocalDateTime dateInit,
+			@Param("dateEnd") LocalDateTime dateEnd);
 }

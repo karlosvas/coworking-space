@@ -26,16 +26,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping(value = "/reservations", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,9 +58,7 @@ public class ReservationController {
 
 	@Operation(summary = "Obtener reserva por id", description = "Devuelve una reserva por su ID")
 	@SwaggerApiResponses
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Reserva encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-	})
+	@ApiResponse(responseCode = "200", description = "Reserva encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@GetMapping("/{id}")
 	public ResponseEntity<DataResponse> findReservationById(@PathVariable("id") int id) {
 		ReservationDTO foundReservation = reservationService.findReservationByID(id);
@@ -76,9 +67,7 @@ public class ReservationController {
 
 	@Operation(summary = "Crear reserva", description = "Crea una nueva reserva con la informacion enviada, los FK deven ser valores existentes en la base de datos")
 	@SwaggerApiResponses
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Reserva creada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-	})
+	@ApiResponse(responseCode = "200", description = "Reserva creada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@PostMapping
 	public ResponseEntity<DataResponse> createReservation(@RequestBody ReservationDTO reservation) {
 		ReservationDTO createdReservation = reservationService.createReservation(reservation);
@@ -87,10 +76,7 @@ public class ReservationController {
 
 	@Operation(summary = "Actualizar reserva", description = "Actualiza una reserva con la informacion enviada")
 	@SwaggerApiResponses
-	@ApiResponse(responseCode = "200", description = "Reserva actualizada")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Reserva actualizada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-	})
+	@ApiResponse(responseCode = "200", description = "Reserva actualizada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@PutMapping("/{id}")
 	public ResponseEntity<DataResponse> updateReservation(@PathVariable("id") int id,
 			@RequestBody ReservationDTO reservation) {
@@ -100,19 +86,20 @@ public class ReservationController {
 
 	@Operation(summary = "Eliminar reserva", description = "Elimina una reserva por su ID")
 	@SwaggerApiResponses
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "Reserva eliminada", content = @Content)
-	})
+	@ApiResponse(responseCode = "204", description = "Reserva eliminada", content = @Content)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<DataResponse> deleteRoom(@PathVariable("id") int id) {
 		reservationService.deleteReservation(id);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REMOVED, null);
 	}
 
+	@Operation(summary = "Obtener reservas entre fechas", description = "Devuelve una lista con todas las reservas entre dos fechas")
+	@SwaggerApiResponses
+	@ApiResponse(responseCode = "200", description = "Lista de reservas entre fechas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@GetMapping("/filters")
 	public ResponseEntity<DataResponse> findReservationsBetweenDates(
-		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateInit,
-		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateEnd) {
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateInit,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateEnd) {
 		LocalDateTime defaultDateInit = LocalDateTime.now().minusYears(1);
 		LocalDateTime defaultDateEnd = LocalDateTime.now().plusYears(1);
 
