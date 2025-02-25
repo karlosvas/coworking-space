@@ -35,7 +35,6 @@ public class ReservationMapper {
 
     public Reservation convertToEntity(ReservationDTO reservationDTO) {
         User user = userMapper.getForeignKey(reservationDTO.getUserFK());
-        List<Room> rooms = roomMapper.getForeignKeys(reservationDTO.getRoomsFK());
 
         Reservation reservation = new Reservation();
         reservation.setDateInit(reservationDTO.getDateInit());
@@ -43,7 +42,6 @@ public class ReservationMapper {
         reservation.setReserveStatus(reservationDTO.getReserveStatus());
         reservation.setDescription(reservationDTO.getDescription());
         reservation.setUser(user);
-        reservation.setRoom(rooms);
 
         return reservation;
     }

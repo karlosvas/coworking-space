@@ -1,7 +1,9 @@
 package com.grupo05.coworking_space.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.grupo05.coworking_space.enums.RoomStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity(name = "ROOM")
 @Table(name = "ROOM", schema = "coworking_space")
@@ -34,7 +37,15 @@ public class Room {
 	@Column(name = "capacity", nullable = false)
 	private int capacity;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "reservation_id", nullable = true)
+	@ManyToOne
+	@JoinColumn(name = "reservation_id")
 	private Reservation reservation;
+
+	public Reservation getReservation() {
+		return reservation;
+	}
+
+	public void setReservation(Reservation reservation) {
+		this.reservation = reservation;
+	}
 }

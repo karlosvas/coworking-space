@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.grupo05.coworking_space.enums.ReservationStatus;
 
 @Entity(name = "RESERVATION")

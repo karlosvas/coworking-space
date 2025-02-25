@@ -13,9 +13,11 @@ import com.grupo05.coworking_space.model.Reservation;
 import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.repository.ReservationRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import com.grupo05.coworking_space.mapper.ReservationMapper;
+import com.grupo05.coworking_space.mapper.RoomMapper;
 
 @Service
 @Slf4j
@@ -23,28 +25,34 @@ public class ReservationService {
 
     private ReservationRepository reservationRepository;
     private ReservationMapper reservationMapper;
+    private RoomMapper roomMapper;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationMapper reservationMapper) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationMapper reservationMapper,
+            RoomMapper roomMapper) {
         this.reservationRepository = reservationRepository;
         this.reservationMapper = reservationMapper;
+        this.roomMapper = roomMapper;
     }
 
+    @Transactional
     public ReservationDTO createReservation(ReservationDTO reservationDTO) {
         try {
             if (reservationDTO == null) {
                 throw new RequestException(ApiError.BAD_REQUEST);
             }
             Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
-            // Foren keys bidireccionales
-            // for (Room room : reservation.getRoom()) {
-            // room.setReservation(reservation);
-            // }
-
-            log.info("Reserva creada: {}" + reservation);
             Reservation savedReservation = reservationRepository.save(reservation);
+            List<Room> rooms = roomMapper.getForeignKeys(reservationDTO.getRoomsFK(), savedReservation);
+            for (Room room : rooms)
+                room.setReservation(reservation);
+            savedReservation.setRoom(rooms);
+
+            log.info("Reserva creada: {}" + savedReservation.getId());
+            reservationRepository.save(savedReservation);
+
             return reservationMapper.convertToDTO(savedReservation);
         } catch (RequestException e) {
-            // Puede ahver un error en la validación de los datos en convertToEntity
+            // Puede haber un error en la validación de los datos en convertToEntity
             // por eso se captura la excepción y se lanza nuevamente
             throw e;
         } catch (Exception e) {

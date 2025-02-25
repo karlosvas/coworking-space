@@ -83,7 +83,7 @@ public class RoomService {
 	public RoomDTO updateRoom(int id, RoomDTO room) {
 		try {
 			Room roomFound = roomMapper.convertToEntity(this.findRoomById(id));
-
+			roomFound.setId(id);
 			roomFound.setName(room.getName());
 			roomFound.setRoomStatus(room.getRoomStatus());
 			roomFound.setCapacity(room.getCapacity());
