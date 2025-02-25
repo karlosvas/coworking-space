@@ -16,6 +16,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,7 @@ import javax.validation.constraints.Size;
 import com.grupo05.coworking_space.enums.ReservationStatus;
 
 @Entity(name = "RESERVATION")
-@Table(name = "RESERVATION", schema = "coworking_space")
+@Table(name = "RESERVATION")
 @Data
 public class Reservation {
     @Id
@@ -35,13 +36,11 @@ public class Reservation {
 
     @NotNull(message = "Deve ingresar una fecha de inicio")
     @Column(name = "start_date", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateInit;
+    private LocalDateTime dateInit;
 
-    @NotNull(message = "Deve ingresar una fecha de fin")
-    @Column(name = "end_date", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateEnd;
+	@NotNull(message = "Deve ingresar una fecha de fin")
+	@Column(name = "end_date", nullable = false)
+	private LocalDateTime dateEnd;
 
     @NotNull(message = "El estado no puede estar vacío")
     @Enumerated(EnumType.STRING)
