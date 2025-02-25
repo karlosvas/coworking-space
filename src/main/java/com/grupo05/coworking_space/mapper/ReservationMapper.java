@@ -1,12 +1,9 @@
 package com.grupo05.coworking_space.mapper;
 
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 import com.grupo05.coworking_space.dto.ReservationDTO;
 import com.grupo05.coworking_space.model.Reservation;
-import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.model.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReservationMapper {
     private UserMapper userMapper;
-    private RoomMapper roomMapper;
 
-    public ReservationMapper(UserMapper userMapper, RoomMapper roomMapper) {
+    public ReservationMapper(UserMapper userMapper) {
         this.userMapper = userMapper;
-        this.roomMapper = roomMapper;
     }
 
     public ReservationDTO convertToDTO(Reservation reservation) {

@@ -75,7 +75,15 @@ public enum ApiError {
 	DUPLICATE_EMAIL(
 			HttpStatus.CONFLICT,
 			"Duplicate Email",
-			"Email already registered");
+			"Email already registered"),
+	ROOM_NOT_AVAILABLE(
+			HttpStatus.CONFLICT,
+			"Room Not Available",
+			"Room is not available for reservation, because it is"),
+	DATE_NOT_AVAILABLE(
+			HttpStatus.CONFLICT,
+			"Date Not Available",
+			"Date is not available for reservation, because it is already reserved");
 
 	private final HttpStatus status;
 	private final String title;

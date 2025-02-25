@@ -4,19 +4,14 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.grupo05.coworking_space.annotations.SwaggerApiResponses;
 import com.grupo05.coworking_space.dto.ReservationDTO;
+import com.grupo05.coworking_space.enums.ApiError;
 import com.grupo05.coworking_space.enums.ApiSuccess;
+import com.grupo05.coworking_space.exception.RequestException;
 import com.grupo05.coworking_space.service.ReservationService;
+import com.grupo05.coworking_space.service.RoomService;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,6 +65,13 @@ public class ReservationController {
 	@ApiResponse(responseCode = "200", description = "Reserva creada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@PostMapping
 	public ResponseEntity<DataResponse> createReservation(@RequestBody ReservationDTO reservation) {
+		// Asegurarse de que no hay reservas en el mismo horario
+		List<ReservationDTO> dates = reservationService.findReservationsBetweenDates(reservation.getDateInit(),
+				reservation.getDateEnd());
+		if (!dates.isEmpty())
+			throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
+
+		// Crear la reserva
 		ReservationDTO createdReservation = reservationService.createReservation(reservation);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_CREATED, createdReservation);
 	}

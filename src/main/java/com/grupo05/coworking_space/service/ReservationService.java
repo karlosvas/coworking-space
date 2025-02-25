@@ -19,7 +19,6 @@ import com.grupo05.coworking_space.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
-import com.grupo05.coworking_space.mapper.ReservationMapper;
 import com.grupo05.coworking_space.mapper.RoomMapper;
 
 @Service
@@ -45,9 +44,15 @@ public class ReservationService {
             }
             Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
             Reservation savedReservation = reservationRepository.save(reservation);
+
             List<Room> rooms = roomMapper.getForeignKeys(reservationDTO.getRoomsFK(), savedReservation);
-            for (Room room : rooms)
+            for (Room room : rooms) {
+                String status = room.getRoomStatus().toString().toUpperCase();
+                if (status == "BUSY" || status == "MANTENIENCE" || status == "NOT AVIABLE")
+                    throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
+                            "Room is not available for reservation, because it is" + status);
                 room.setReservation(reservation);
+            }
             savedReservation.setRoom(rooms);
 
             log.info("Reserva creada: {}" + savedReservation.getId());
@@ -55,39 +60,37 @@ public class ReservationService {
 
             return reservationMapper.convertToDTO(savedReservation);
         } catch (RequestException e) {
-            // Puede haber un error en la validación de los datos en convertToEntity
-            // por eso se captura la excepción y se lanza nuevamente
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error en la creación de la reserva: " + e.getMessage());
         }
     }
 
-	public ReservationDTO findReservationByID(int id) {
-		try {
-			Optional<Reservation> reservation = reservationRepository.findById(id);
+    public ReservationDTO findReservationByID(int id) {
+        try {
+            Optional<Reservation> reservation = reservationRepository.findById(id);
 
-			if (reservation.isEmpty()) {
-				throw new RequestException(ApiError.RECORD_NOT_FOUND);
-			}
+            if (reservation.isEmpty()) {
+                throw new RequestException(ApiError.RECORD_NOT_FOUND);
+            }
 
-			return reservationMapper.convertToDTO(reservation.get());
-		} catch (Exception e) {
-			throw new RuntimeException("Error al buscar la reserva: " + e.getMessage());
-		}
-	}
+            return reservationMapper.convertToDTO(reservation.get());
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar la reserva: " + e.getMessage());
+        }
+    }
 
-	public List<ReservationDTO> findAllReservations() {
-		try {
-			List<Reservation> reservations = reservationRepository.findAll();
-			return reservations
-				.stream()
-				.map(reservationMapper::convertToDTO)
-				.collect(Collectors.toList());
-		} catch (Exception e) {
-			throw new RuntimeException("Error al obtener las reservas: " + e.getMessage());
-		}
-	}
+    public List<ReservationDTO> findAllReservations() {
+        try {
+            List<Reservation> reservations = reservationRepository.findAll();
+            return reservations
+                    .stream()
+                    .map(reservationMapper::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener las reservas: " + e.getMessage());
+        }
+    }
 
     public ReservationDTO updateResevation(ReservationDTO reservationDTO, int id) {
         try {
@@ -108,28 +111,26 @@ public class ReservationService {
         }
     }
 
-	public void deleteReservation(int id) {
-		try {
-			ReservationDTO reservation = this.findReservationByID(id);
-			reservationRepository.deleteById(reservation.getId());
-		} catch (Exception e) {
-			throw new RuntimeException("Error al eliminar la reserva: " + e.getMessage());
-		}
-	}
+    public void deleteReservation(int id) {
+        try {
+            ReservationDTO reservation = this.findReservationByID(id);
+            reservationRepository.deleteById(reservation.getId());
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar la reserva: " + e.getMessage());
+        }
+    }
 
-	public List<ReservationDTO> findReservationsBetweenDates(LocalDateTime dateInit, LocalDateTime dateEnd) {
-		try {
-			List<Reservation>
-				reservations =
-				reservationRepository.findReservationsBetweenDates(dateInit, dateEnd);
-			return reservations
-				.stream()
-				.map(reservationMapper::convertToDTO)
-				.collect(Collectors.toList());
-		} catch (DataAccessException ex) {
-			throw new RequestException(ApiError.DATABASE_ERROR);
-		} catch (Exception ex) {
-			throw new RequestException(ApiError.INTERNAL_SERVER_ERROR);
-		}
-	}
+    public List<ReservationDTO> findReservationsBetweenDates(LocalDateTime dateInit, LocalDateTime dateEnd) {
+        try {
+            List<Reservation> reservations = reservationRepository.findReservationsBetweenDates(dateInit, dateEnd);
+            return reservations
+                    .stream()
+                    .map(reservationMapper::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (DataAccessException ex) {
+            throw new RequestException(ApiError.DATABASE_ERROR);
+        } catch (Exception ex) {
+            throw new RequestException(ApiError.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

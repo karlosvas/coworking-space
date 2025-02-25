@@ -53,7 +53,7 @@ Este es un proyecto colaborativo de la comunidad **Bytes Colaborativos**. Si des
 
 ## Documentación
 
-Encontrarás toda la documentación generada por Swagger en la siguiente URL: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+Encontrarás toda la documentación generada por Swagger en la siguiente URL: [http://localhost:8080/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)
 
 ### Endpoints 🔗
 

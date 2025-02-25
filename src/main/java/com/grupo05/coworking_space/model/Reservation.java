@@ -12,23 +12,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.grupo05.coworking_space.enums.ReservationStatus;
 
 @Entity(name = "RESERVATION")
-@Table(name = "RESERVATION")
+@Table(name = "RESERVATION", schema = "coworking_space")
 @Data
 public class Reservation {
     @Id
@@ -40,9 +36,9 @@ public class Reservation {
     @Column(name = "start_date", nullable = false)
     private LocalDateTime dateInit;
 
-	@NotNull(message = "Deve ingresar una fecha de fin")
-	@Column(name = "end_date", nullable = false)
-	private LocalDateTime dateEnd;
+    @NotNull(message = "Deve ingresar una fecha de fin")
+    @Column(name = "end_date", nullable = false)
+    private LocalDateTime dateEnd;
 
     @NotNull(message = "El estado no puede estar vacío")
     @Enumerated(EnumType.STRING)

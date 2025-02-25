@@ -66,9 +66,9 @@ public class UserController {
     })
     @PostMapping("/login")
     public ResponseEntity<DataResponse> loginUsuario(@RequestBody UserDTO userRequest) {
-        UserDTO userDTO = userService.findByUsername(userRequest.getUsername());
+        userService.findByUsername(userRequest.getUsername());
         // Logeamos al usuario y devolvemos un mensaje de usuario logeado junto con el
-        UserDTO newUserDTO = userService.loginUser(userDTO);
+        UserDTO newUserDTO = userService.loginUser(userRequest);
         return ResponseHandler.handleApiResponse(ApiSuccess.USER_LOGGED_IN, newUserDTO);
     }
 

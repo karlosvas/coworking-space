@@ -122,19 +122,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             // Obtenemos el usuario de la base de datos
             Optional<User> optionalUser = userRepository.findByEmail(userDTO.getEmail());
 
-            if (optionalUser.isEmpty()) {
+            if (optionalUser.isEmpty())
                 throw new RequestException(ApiError.RECORD_NOT_FOUND);
-            }
 
             // Verificamos que la contraseña sea correcta, comparando la contraseña
             // encriptada con la contraseña ingresada
             // por el usuario encodeada
             User user = optionalUser.get();
-            if (!passwordEncoder.matches(
-                    user.getPassword(),
-                    passwordEncoder.encode(userDTO.getPassword()))) {
+            // Verificar que las contraseñas y emails coinciden coincidan
+            // In the loginUser method:
+            if (!passwordEncoder.matches(userDTO.getPassword(), user.getPassword()))
                 throw new RequestException(ApiError.AUTHENTICATION_FAILED);
-            }
 
             // Generamos el token usando el usuario encontrado
             String token = jwtUtil.generateToken(user);
