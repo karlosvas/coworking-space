@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.grupo05.coworking_space.dto.RoomDTO;
 import com.grupo05.coworking_space.enums.ApiError;
 import com.grupo05.coworking_space.exception.RequestException;
+import com.grupo05.coworking_space.model.Reservation;
 import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.repository.RoomRepository;
 
@@ -33,15 +34,17 @@ public class RoomMapper {
 		return room;
 	}
 
-	public List<Room> getForeignKeys(List<Integer> listRooms) {
+	public List<Room> getForeignKeys(List<Integer> listRooms, Reservation reservation) {
 		List<Room> rooms = new ArrayList<>();
 		for (Integer i : listRooms) {
-			Optional<Room> room = roomRepository.findById(i);
-			if (room.isPresent())
-				rooms.add(room.get());
-			else
+			Optional<Room> roomOptional = roomRepository.findById(i);
+			if (roomOptional.isPresent()) {
+				Room room = roomOptional.get();
+				room.setReservation(reservation);
+				rooms.add(room);
+			} else {
 				throw new RequestException(ApiError.BAD_REQUEST);
-
+			}
 		}
 		return rooms;
 	}

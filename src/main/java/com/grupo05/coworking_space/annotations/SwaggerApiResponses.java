@@ -12,6 +12,12 @@ import java.lang.annotation.Target;
 
 import com.grupo05.coworking_space.dto.ExceptionDTO;
 
+/**
+ * Anotación para definir las respuestas de los endpoints de la API. Manejado por Swagger.	
+ * @Target para indicar que la anotación puede ser aplicada a un método o tipo.
+ * @Retention para indicar que la anotación estará disponible en tiempo de ejecución.
+ * @interface para definir una anotación, se crea la anotacion SwaggerApiResponses. 
+ */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @ApiResponses(value = {
