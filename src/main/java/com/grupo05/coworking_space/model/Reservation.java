@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -73,9 +74,14 @@ public class Reservation {
     /**
      * @OneToMany es una anotación de JPA que indica que la relación entre las entidades
      * es de uno a muchos. En este caso, una reserva puede tener varias salas asociadas.
+     * CascadeType.PERSIST y CascadeType.MERGE son opciones de cascada que indican que
+     * las operaciones de persistencia y fusión deben propagarse a las entidades asociadas.
+     * 
      * @param room es la lista de salas reservadas.
+     * @NotEmpty es una anotación de validación que indica que la lista de salas no puede
      */
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @NotEmpty(message = "Debe seleccionar al menos una sala para la sala")
     private List<Room> room;
 
     /**
