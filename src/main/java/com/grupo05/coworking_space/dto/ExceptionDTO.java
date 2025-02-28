@@ -8,6 +8,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Data Transfer Object para Errores
+ * @Schema Permite configurar la documentación de Swagger para este DTO
+ * @Getter, @Setter y @RequiredArgsConstructor son anotaciones de Lombok para generar automáticamente los getters, setters y constructores con todos los argumentos
+ * Para más infromacion sobre el dto, ver la documentacion de Swagger en: localhost:8080/api/swagger-ui.html
+ */
 @Getter
 @Setter
 @RequiredArgsConstructor
