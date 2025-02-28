@@ -10,6 +10,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Data Transfer Object para Reservas
+ * @Schema Permite configurar la documentación de Swagger para este DTO
+ * @Getter, @Setter y @AllArgsConstructor son anotaciones de Lombok para generar automáticamente los getters, setters y constructores con todos los argumentos
+ * Para más infromacion sobre el dto, ver la documentacion de Swagger en: localhost:8080/api/swagger-ui.html
+ */
 @Getter
 @Setter
 @AllArgsConstructor

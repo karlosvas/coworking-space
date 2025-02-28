@@ -8,6 +8,16 @@ import com.grupo05.coworking_space.enums.ApiSuccess;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
+/**
+ * Clase que representa la respuesta de la API.
+ * Esta clase encapsula los datos de la respuesta, incluyendo
+ * el objeto de respuesta, si hay un error, el mensaje de la respuesta,
+ * el código de estado HTTP y la marca de tiempo de la respuesta.
+ * @Getter es una anotación de Lombok que genera automáticamente los métodos getter.
+ * @Schema es una anotación de Swagger que permite documentar la clase.
+ * Para más información sobre la respuesta de la API,
+ * ver la documentación de Swagger en: localhost:8080/api/swagger-ui.html
+ */
 @Getter
 @Schema(description = "Objeto de respuesta de la API")
 public class DataResponse {

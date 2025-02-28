@@ -53,13 +53,34 @@ Este es un proyecto colaborativo de la comunidad **Bytes Colaborativos**. Si des
 
 ## Documentación
 
-Encontrarás toda la documentación generada por Swagger en la siguiente URL: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+Encontrarás toda la documentación generada por Swagger en la siguiente URL: [http://localhost:8080/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)
 
 ### Endpoints 🔗
 
 - `/api/users`
+  Registrar usuario /user/register
+  Iniciar sesión /user/login
+  Registrar administrador /user/admin/register
+  Obtener recursos del usuario /user/resources
+  Obtener todos los usuarios /user/list
+  Eliminar usuario /user/delete/{id}
+
 - `/api/reservations`
+  Obtener todas las reservas /reservations
+  Obtener reservas por usuario /reservations/user/{id}
+  Obtener reservas por sala /reservations/room/{id}
+  Obtener reservas por estado /reservations/status/{status}
+  Obtener reservas por fecha /reservations/date/{date}
+  Crear reserva /reservations/create
+  Actualizar reserva /reservations/update/{id}
+  Eliminar reserva /reservations/delete/{id}
+
 - `/api/rooms`
+  Obtener todas las salas /rooms
+  Obtener sala por ID /rooms/{id}
+  Crear sala /rooms/create
+  Actualizar sala /rooms/update/{id}
+  Eliminar sala /rooms/delete/{id}
 
 ### Tablas y Estructura 📊
 

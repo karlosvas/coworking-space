@@ -12,6 +12,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * Clase que representa un usuario del sistema.
+ * Esta clase define los atributos y relaciones de un usuario,
+ * incluyendo el nombre de usuario, el correo electrónico, la contraseña
+ * y el rol de usuario.
+ * @Entity es una anotación de JPA que indica que la clase es una entidad.
+ * @Table es una anotación de JPA que indica la tabla de base de datos a la que se asigna la entidad.
+ * @Data es una anotación de Lombok que genera automáticamente los métodos equals, hashCode, toString y otros.
+ */
 @Entity(name = "USER")
 @Table(name = "USER", schema = "coworking_space")
 @Data

@@ -4,28 +4,32 @@ import com.grupo05.coworking_space.enums.Role;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Data Transfer Object para Usuarios
+ * @Schema Permite configurar la documentación de Swagger para este DTO
+ * @Getter, @Setter y @AllArgsConstructor, @NoArgsConstructor son anotaciones de Lombok para generar automáticamente los getters, setters y constructores con todos los argumentos, y sin argumentos
+ * Para más infromacion sobre el dto, ver la documentacion de Swagger en: localhost:8080/api/swagger-ui.html
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Schema(description = "Data Transfer Object para Usuarios")
 public class UserDTO {
     @Schema(description = "Identificador único para usuario", type = "integer", required = false, hidden = true)
     private int id;
 
-    @Schema(description = "Nombre del usuario", example = "Juan Pérez", type = "string", required = true)
+    @Schema(description = "Nombre del usuario", example = "Jorge", type = "string", required = true)
     private String username;
 
-    @Schema(description = "Correo electrónico del usuario", example = "juan.perez@example.com", type = "string", required = true)
+    @Schema(description = "Correo electrónico del usuario", example = "jorge@gmail.com", type = "string", required = true)
     private String email;
 
-    @Schema(description = "Contraseña del usuario", example = "password123", type = "string", required = true)
+    @Schema(description = "Contraseña del usuario", example = "jorge123", type = "string", required = true)
     private String password;
 
     @Schema(description = "Token de autenticación, no es obligatorio porque nos e requeire para registarrse", type = "string", required = false, hidden = true)
