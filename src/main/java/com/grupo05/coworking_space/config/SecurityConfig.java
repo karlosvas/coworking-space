@@ -24,14 +24,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/login", "/users/register",
+                        .requestMatchers(
+                            "/users/login",
+                                "/users/register",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
-                                "/webjars/**")
-                        .permitAll()
-                        .requestMatchers("/users/list").hasRole("ADMIN")
+                                "/webjars/**").permitAll()
+                        .requestMatchers("/users/list",
+                        "/users/admin/register").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

@@ -42,8 +42,10 @@ public class RoomService {
 	 * @throws RequestException Si ocurre un error en la base de datos (DATABASE_ERROR)
 	 *                          o un error interno inesperado (INTERNAL_SERVER_ERROR)
 	 */
+	
 	public List<RoomDTO> findAllRooms() {
 		try {
+			
 			List<Room> rooms = roomRepository.findAll();
 
 			return rooms.stream().map(roomMapper::convertToDTO).collect(Collectors.toList());

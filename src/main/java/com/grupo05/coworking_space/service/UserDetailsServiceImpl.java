@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -120,7 +121,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     public UserDTO findUserById(int id) {
         User user = userRepository.findById(id).orElse(null);
-        log.info("Usuario encontrado: {}" + user.getId());
+        log.info("Usuario encontrado: {}", user.getId());
         return userMapper.convertToDTO(user);
     }
 
@@ -138,7 +139,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             Optional<User> user = userRepository.findByUsername(username);
             if (user.isEmpty()) 
                 throw new RequestException(ApiError.RECORD_NOT_FOUND);
-            log.info("Usuario encontrado: {}" + user.get().getId());
+            log.info("Usuario encontrado: {}", user.get().getId());
             return userMapper.convertToDTO(user.get());
         } catch (RequestException e) {
             throw e;
@@ -169,7 +170,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
             userEntity.setRole(role);
             userEntity = userRepository.save(userEntity);
-            log.info("Usuario registrado: {}" + userEntity.getId());
+            log.info("Usuario registrado: {}", userEntity.getId());
             return userMapper.convertToDTO(userEntity);
         } catch (RequestException e) {
             throw e;
@@ -212,7 +213,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             // Actualizamos el token
             UserDTO loggedUserDTO = userMapper.convertToDTO(user);
             loggedUserDTO.setToken(token);
-            log.info("Usuario logeado: {}" + user.getId());
+            log.info("Usuario logeado: {}", user.getId());
             return loggedUserDTO;
         } catch (Exception e) {
             throw new RuntimeException("Error al registrar el usuario: " + e.getMessage());
@@ -228,7 +229,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public List<UserDTO> findAllUser() {
         try {
             List<User> user = userRepository.findAll();
-            log.info("Se han encontrado {} usuarios" + user.size());
+            log.info("Se han encontrado {} usuarios", user.size());
             return user.stream()
                     .map(userMapper::convertToDTO)
                     .collect(Collectors.toList());
@@ -253,9 +254,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 throw new RequestException(ApiError.RECORD_NOT_FOUND);
 
             userRepository.deleteById(id);
-            log.info("Usuario eliminado: {}" + user.get().getId());
+            log.info("Usuario eliminado: {}", user.get().getId());
             return userMapper.convertToDTO(user.get());
-        } catch (RequestException e) {
+        } catch (DataIntegrityViolationException e) {
+            log.error("Error de integridad referencial al eliminar usuario: {}", e.getMessage());
+            throw new RequestException(ApiError.ASSOCIATED_RESOURCES);
+    }    catch (RequestException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error al eliminar el usuario: " + e.getMessage());

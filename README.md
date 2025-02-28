@@ -15,7 +15,7 @@ Este proyecto sigue la metodología ágil **Scrum** para la gestión y desarroll
 @Lsterpino  
 @Rs-845  
 Creadores de Bytes Colaborativos: @devch-tech y @Jorexbp  
-Canal de Twitch: [Bytes Colaborativos](https://www.twitch.tv/bytescolaborativos)
+Canal de Twitch: [Bytes Colaborativos](https://www.twitch.tv/api/bytescolaborativos)
 
 ## Funcionalidades Principales ✨
 
