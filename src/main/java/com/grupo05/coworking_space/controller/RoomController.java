@@ -42,18 +42,10 @@ public class RoomController {
 		summary = "Obtener todas las salas", description = "Devuelve una lista con todas las salas"
 	)
 	@SwaggerApiResponses
-	@ApiResponses(
-		value = {
-			@ApiResponse(
-				responseCode = "200", description = "Lista de salas", content = @Content(
-				mediaType = "application/json",
-				schema = @Schema(implementation = DataResponse.class)
-			)
-			), @ApiResponse(
-			responseCode = "204", description = "No hay ninguna sala", content = @Content
-		)
-		}
-	)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Lista de salas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
+			@ApiResponse(responseCode = "204", description = "No hay ninguna sala", content = @Content)
+	})
 	@GetMapping
 	public ResponseEntity<DataResponse> findAllRooms() {
 		List<RoomDTO> allRooms = roomService.findAllRooms();
@@ -72,16 +64,9 @@ public class RoomController {
 	 */
 	@Operation(summary = "Obtener sala por id", description = "Devuelve una sala por su ID")
 	@SwaggerApiResponses
-	@ApiResponses(
-		value = {
-			@ApiResponse(
-				responseCode = "200", description = "Sala encontrada", content = @Content(
-				mediaType = "application/json",
-				schema = @Schema(implementation = DataResponse.class)
-			)
-			),
-		}
-	)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Sala encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
+	})
 	@GetMapping("/{id}")
 	public ResponseEntity<DataResponse> findRoomById(@PathVariable("id") int id) {
 		RoomDTO foundRoom = roomService.findRoomById(id);
@@ -99,16 +84,9 @@ public class RoomController {
 		summary = "Crear sala", description = "Crea una nueva sala con la informacion enviada"
 	)
 	@SwaggerApiResponses
-	@ApiResponses(
-		value = {
-			@ApiResponse(
-				responseCode = "200", description = "Sala creada", content = @Content(
-				mediaType = "application/json",
-				schema = @Schema(implementation = DataResponse.class)
-			)
-			),
-		}
-	)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Sala creada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
+	})
 	@PostMapping
 	public ResponseEntity<DataResponse> createRoom(@RequestBody RoomDTO roomDTO) {
 		RoomDTO createdRoom = roomService.createRoom(roomDTO);
@@ -127,22 +105,13 @@ public class RoomController {
 		summary = "Actualizar sala", description = "Actualiza una sala con la informacion enviada"
 	)
 	@SwaggerApiResponses
-	@ApiResponses(
-		value = {
-			@ApiResponse(
-				responseCode = "200", description = "Sala actualizada", content = @Content(
-				mediaType = "application/json",
-				schema = @Schema(implementation = DataResponse.class)
-			)
-			),
-		}
-	)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Sala actualizada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
+	})
 	@PutMapping("/{id}")
 	public ResponseEntity<DataResponse> updateRoom(
-		@PathVariable("id") int id,
-		@RequestBody RoomDTO room
-	)
-	{
+			@PathVariable("id") int id,
+			@RequestBody RoomDTO room) {
 		RoomDTO updatedRoom = roomService.updateRoom(id, room);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_UPDATED, updatedRoom);
 	}
@@ -155,11 +124,9 @@ public class RoomController {
 	 */
 	@Operation(summary = "Eliminar sala", description = "Elimina una sala por su ID")
 	@SwaggerApiResponses
-	@ApiResponses(
-		value = {
+	@ApiResponses(value = {
 			@ApiResponse(responseCode = "204", description = "Sala eliminada", content = @Content)
-		}
-	)
+	})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<DataResponse> deleteRoom(@PathVariable("id") int id) {
 		roomService.deleteRoom(id);
