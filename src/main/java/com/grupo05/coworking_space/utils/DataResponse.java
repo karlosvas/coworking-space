@@ -30,7 +30,7 @@ public class DataResponse {
 	@Schema(description = "Mensaje de la respuesta", type = "string", example = "Operación exitosa")
 	private final String message;
 
-	@Schema(description = "Código de estado HTTP", type = "integer")
+	@Schema(description = "Código de estado HTTP", type = "integer", example = "200")
 	private final int statusCode;
 
 	@Schema(description = "Marca de tiempo de la respuesta", format = "date-time")

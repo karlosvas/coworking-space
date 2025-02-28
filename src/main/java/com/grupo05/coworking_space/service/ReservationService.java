@@ -89,7 +89,7 @@ public class ReservationService {
             // Actuaalizamos las habitaciones en la reserva, y guardamos la reserva
             savedReservation.setRoom(rooms);
 
-            log.info("Reserva creada: {}" + savedReservation.getId());
+            log.info("Reserva creada: {}", savedReservation.getId());
             reservationRepository.save(savedReservation);
 
             return reservationMapper.convertToDTO(savedReservation);
@@ -118,7 +118,7 @@ public class ReservationService {
                 throw new RequestException(ApiError.RECORD_NOT_FOUND);
 
             // Retornamos la reserva en formato DTO
-            log.info("Reserva encontrada: {}" + reservation.get().getId());
+            log.info("Reserva encontrada: {}", reservation.get().getId());
             return reservationMapper.convertToDTO(reservation.get());
         } catch (Exception e) {
             throw new RuntimeException("Error al buscar la reserva: " + e.getMessage());
@@ -135,7 +135,7 @@ public class ReservationService {
         try {
             // Obtenemos todas las reservas, las convertimos a DTO y las retornamos
             List<Reservation> reservations = reservationRepository.findAll();
-            log.info("Se han encontrado {} reservas" + reservations.size());
+            log.info("Se han encontrado {} reservas", reservations.size());
             return reservations
                     .stream()
                     .map(reservationMapper::convertToDTO)
@@ -172,7 +172,7 @@ public class ReservationService {
             // Lo guardamos en la base de datos
             Reservation savedReservation = reservationRepository.save(updateReservation);
 
-            log.info("Reserva actualizada: {}" + savedReservation.getId());
+            log.info("Reserva actualizada: {}", savedReservation.getId());
             return reservationMapper.convertToDTO(savedReservation);
         }catch (RequestException e) {
             throw e;
@@ -194,7 +194,7 @@ public class ReservationService {
             // el catch, eliminamos la reserva encontrada en la base de datos
             ReservationDTO reservation = this.findReservationByID(id);
             reservationRepository.deleteById(reservation.getId());
-            log.info("Reserva eliminada: {}" + reservation.getId());
+            log.info("Reserva eliminada: {}", reservation.getId());
         }catch (RequestException e) {
             throw e;
         } catch (Exception e) {
