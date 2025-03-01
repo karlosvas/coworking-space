@@ -22,8 +22,11 @@ import com.grupo05.coworking_space.exception.RequestException;
 import com.grupo05.coworking_space.service.ReservationService;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
+import com.grupo05.coworking_space.utils.SwaggerExamples;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -70,8 +73,10 @@ public class ReservationController {
 	@Operation(summary = "Obtener todas las reservas", description = "Devuelve una lista con todas las reservas de tipo ReservationDTO")
 	@SwaggerApiResponses
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Lista de reservas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-			@ApiResponse(responseCode = "204", description = "No hay ninguna reserva", content = @Content)
+			@ApiResponse(responseCode = "200", description = "Lista de reservas",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
+			@ApiResponse(responseCode = "204", description = "No hay ninguna reserva",
+			content = @Content)
 	})
 	@GetMapping
 	public ResponseEntity<DataResponse> findAllReservations() {
@@ -93,7 +98,8 @@ public class ReservationController {
      */
 	@Operation(summary = "Obtener reserva por id", description = "Devuelve una reserva por su ID")
 	@SwaggerApiResponses
-	@ApiResponse(responseCode = "200", description = "Reserva encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
+	@ApiResponse(responseCode = "200", description = "Reserva encontrada",
+	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@GetMapping("/{id}")
 	public ResponseEntity<DataResponse> findReservationById(@PathVariable("id") int id) {
 		ReservationDTO foundReservation = reservationService.findReservationByID(id);
@@ -111,7 +117,10 @@ public class ReservationController {
      */
 	@Operation(summary = "Crear reserva", description = "Crea una nueva reserva con la informacion enviada, los FK deven ser valores existentes en la base de datos")
 	@SwaggerApiResponses
-	@ApiResponse(responseCode = "200", description = "Reserva creada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
+	@ApiResponse(responseCode = "201", description = "Reserva creada",
+			content = @Content(mediaType = "application/json", 
+			schema = @Schema(implementation = DataResponse.class),
+			examples = { @ExampleObject(value = SwaggerExamples.DataResponseExamples.CREATED_EXAMPLE) }))
 	@PostMapping
 	public ResponseEntity<DataResponse> createReservation(@RequestBody ReservationDTO reservation) {
 		List<ReservationDTO> dates = reservationService.findReservationsBetweenDates(reservation.getDateInit(),
@@ -133,7 +142,8 @@ public class ReservationController {
      */
 	@Operation(summary = "Actualizar reserva", description = "Actualiza una reserva con la informacion enviada")
 	@SwaggerApiResponses
-	@ApiResponse(responseCode = "200", description = "Reserva actualizada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
+	@ApiResponse(responseCode = "200", description = "Reserva actualizada",
+	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@PutMapping("/{id}")
 	public ResponseEntity<DataResponse> updateReservation(@PathVariable("id") int id,
 			@RequestBody ReservationDTO reservation) {
@@ -154,7 +164,8 @@ public class ReservationController {
      */
 	@Operation(summary = "Obtener reservas entre fechas", description = "Devuelve una lista con todas las reservas entre dos fechas")
 	@SwaggerApiResponses
-	@ApiResponse(responseCode = "200", description = "Lista de reservas entre fechas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
+	@ApiResponse(responseCode = "200", description = "Lista de reservas entre fechas",
+	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@GetMapping("/filters")
 	public ResponseEntity<DataResponse> findReservationsBetweenDates(
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateInit,

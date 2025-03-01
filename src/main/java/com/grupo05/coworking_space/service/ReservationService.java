@@ -56,7 +56,6 @@ public class ReservationService {
     
      /**
      * Crea una nueva reserva en el sistema.
-     * <p>
      * Este método garantiza que toda la operación se completa correctamente 
      * o no se realiza ningún cambio (transaccionalidad).
      * Verifica la disponibilidad de las salas y actualiza sus estados.
@@ -65,6 +64,7 @@ public class ReservationService {
      * @return DTO con los datos de la reserva creada, incluyendo su ID
      * @throws RequestException Si hay un error de validación o las salas no están disponibles
      * @throws RuntimeException Si ocurre cualquier otro error durante el proceso
+     * @see Transactional para garantizar la atomicidad de la operación
      */
     @Transactional
     public ReservationDTO createReservation(ReservationDTO reservationDTO) {

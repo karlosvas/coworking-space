@@ -172,6 +172,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             userEntity.setRole(role);
             userEntity = userRepository.save(userEntity);
             log.info("Usuario registrado: {}", userEntity.getId());
+            
             return userMapper.convertToDTO(userEntity);
         } catch (RequestException e) {
             throw e;
