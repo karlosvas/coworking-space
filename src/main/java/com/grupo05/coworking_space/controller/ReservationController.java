@@ -2,6 +2,9 @@ package com.grupo05.coworking_space.controller;
 
 import java.util.List;
 
+import com.grupo05.coworking_space.dto.RequestReservationDTO;
+import com.grupo05.coworking_space.enums.ApiError;
+import com.grupo05.coworking_space.exception.RequestException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,14 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.grupo05.coworking_space.annotations.SwaggerApiResponses;
 import com.grupo05.coworking_space.dto.ReservationDTO;
-import com.grupo05.coworking_space.enums.ApiError;
 import com.grupo05.coworking_space.enums.ApiSuccess;
-import com.grupo05.coworking_space.exception.RequestException;
 import com.grupo05.coworking_space.service.ReservationService;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -55,7 +56,7 @@ public class ReservationController {
 	 * @ApiResponse para documentar una respuesta de la API
 	 * @Content para documentar el tipo de contenido de la respuesta
 	 * @Schema para documentar el esquema de la respuesta
-	 * 
+	 *
 	 * @param reservationService servicio de reservas
 	 */
 	private final ReservationService reservationService;
@@ -66,7 +67,7 @@ public class ReservationController {
 
 	/**
      * Obtiene todas las reservas existentes.
-     * 
+     *
      * @return ResponseEntity con la lista de reservas o mensaje de no contenido
      * @GetMapping Mapea solicitudes HTTP GET a este método
      */
@@ -108,8 +109,8 @@ public class ReservationController {
 
 	/**
      * Crea una nueva reserva.
-     * 
-     * @param reservation DTO con la información de la reserva a crear
+     *
+     * @param requestReservationDTO DTO con la información de la reserva a crear
      * @return ResponseEntity con la reserva creada
      * @throws RequestException si la fecha ya está ocupada
      * @RequestBody Vincula el cuerpo de la solicitud HTTP al parámetro del método
@@ -122,19 +123,14 @@ public class ReservationController {
 			schema = @Schema(implementation = DataResponse.class),
 			examples = { @ExampleObject(value = SwaggerExamples.DataResponseExamples.CREATED_EXAMPLE) }))
 	@PostMapping
-	public ResponseEntity<DataResponse> createReservation(@RequestBody ReservationDTO reservation) {
-		List<ReservationDTO> dates = reservationService.findReservationsBetweenDates(reservation.getDateInit(),
-				reservation.getDateEnd());
-		if (!dates.isEmpty())
-			throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
-
-		ReservationDTO createdReservation = reservationService.createReservation(reservation);
+	public ResponseEntity<DataResponse> createReservation(@RequestBody RequestReservationDTO requestReservationDTO) {
+		ReservationDTO createdReservation = reservationService.createReservation(requestReservationDTO);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_CREATED, createdReservation);
 	}
 
 	/**
      * Actualiza una reserva existente.
-     * 
+     *
      * @param id ID de la reserva a actualizar
      * @param reservation DTO con la nueva información
      * @return ResponseEntity con la reserva actualizada
@@ -153,7 +149,7 @@ public class ReservationController {
 
 	/**
      * Busca reservas entre un rango de fechas.
-     * 
+     *
      * @param dateInit Fecha de inicio (opcional, por defecto 1 año atrás)
      * @param dateEnd Fecha final (opcional, por defecto 1 año adelante)
      * @return ResponseEntity con la lista de reservas encontradas
