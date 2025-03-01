@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.grupo05.coworking_space.dto.ReservationDTO;
+import com.grupo05.coworking_space.dto.UserDTO;
 import com.grupo05.coworking_space.enums.ApiError;
 import com.grupo05.coworking_space.exception.RequestException;
 import com.grupo05.coworking_space.mapper.ReservationMapper;
@@ -78,16 +79,23 @@ public class ReservationService {
 
             // Obtenemos todas las FK de las habitaciones y las guardamos en la reserva
             List<Room> rooms = roomMapper.getForeignKeys(reservationDTO.getRoomsFK(), savedReservation);
+
+            if(rooms.isEmpty())
+                throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
+                            "Room is not available for reservation, because it is not found");
+
             for (Room room : rooms) {
                 // Comprobamos si la habitacion esta disponible y almacenamos la referencia de la reserva en cada habitacion
                 String status = room.getRoomStatus().toString().toUpperCase();
                 if (status == "BUSY" || status == "MANTENIENCE" || status == "NOT AVIABLE")
                     throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
                             "Room is not available for reservation, because it is" + status);
-                room.setReservation(reservation);
+                List<Reservation> reservationList = room.getReservations();
+                reservationList.add(savedReservation);
+                room.setReservations(reservationList);
             }
             // Actuaalizamos las habitaciones en la reserva, y guardamos la reserva
-            savedReservation.setRoom(rooms);
+            savedReservation.setRooms(rooms);
 
             log.info("Reserva creada: {}", savedReservation.getId());
             reservationRepository.save(savedReservation);
@@ -192,9 +200,9 @@ public class ReservationService {
         try {
              // Obtenemos la reserva por su ID, lo convertimos a dto, no comprabamos que exista porque ya lo controla 
             // el catch, eliminamos la reserva encontrada en la base de datos
-            ReservationDTO reservation = this.findReservationByID(id);
-            reservationRepository.deleteById(reservation.getId());
-            log.info("Reserva eliminada: {}", reservation.getId());
+            ReservationDTO reservationDTO = this.findReservationByID(id);
+            reservationRepository.deleteById(reservationDTO.getId());
+            log.info("Reserva eliminada: {}", reservationDTO.getId());
         }catch (RequestException e) {
             throw e;
         } catch (Exception e) {
@@ -217,6 +225,33 @@ public class ReservationService {
                     .stream()
                     .map(reservationMapper::convertToDTO)
                     .collect(Collectors.toList());
+        } catch (DataAccessException ex) {
+            throw new RequestException(ApiError.DATABASE_ERROR);
+        } catch (Exception ex) {
+            throw new RequestException(ApiError.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+        /**
+     * Actualiza los datos de un usuario en el sistema.
+     * 
+     * @param id id del usuario que se dessea eliminar las reservas
+     * @return DTO con los datos del usuario actualizado
+     * @throws RequestException Si no se encuentra el usuario con el ID proporcionado
+     * @throws RuntimeException Si ocurre otro tipo de error durante la actualización
+     */
+    public void deleteAllReservationsByUser(int id) {
+        try {
+           List<Reservation> reservations = reservationRepository.findAll();
+
+            for (Reservation actualReservation : reservations) {
+                if(actualReservation.getUserFK() == id){
+                    this.deleteReservation(actualReservation.getId());
+                    log.info("Reserva eliminada: {}, de el usurio {}", actualReservation.getId(), actualReservation.getUserFK());
+                }
+            }
+
+            log.info("Reservas eliminadas con exito del usuario: {}", id);
         } catch (DataAccessException ex) {
             throw new RequestException(ApiError.DATABASE_ERROR);
         } catch (Exception ex) {

@@ -1,5 +1,6 @@
 package com.grupo05.coworking_space.service;
 
+import com.grupo05.coworking_space.dto.ReservationDTO;
 import com.grupo05.coworking_space.dto.UserDTO;
 import com.grupo05.coworking_space.enums.ApiError;
 import com.grupo05.coworking_space.enums.Role;

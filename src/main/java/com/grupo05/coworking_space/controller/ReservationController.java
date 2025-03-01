@@ -142,22 +142,6 @@ public class ReservationController {
 	}
 
 	/**
-     * Elimina una reserva por su ID.
-     * 
-     * @param id ID de la reserva a eliminar
-     * @return ResponseEntity con mensaje de éxito
-     * @DeleteMapping Mapea solicitudes HTTP DELETE a este método
-     */
-	@Operation(summary = "Eliminar reserva", description = "Elimina una reserva por su ID")
-	@SwaggerApiResponses
-	@ApiResponse(responseCode = "204", description = "Reserva eliminada", content = @Content)
-	@DeleteMapping("/{id}")
-	public ResponseEntity<DataResponse> deleteRoom(@PathVariable("id") int id) {
-		reservationService.deleteReservation(id);
-		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REMOVED, null);
-	}
-
-	/**
      * Busca reservas entre un rango de fechas.
      * 
      * @param dateInit Fecha de inicio (opcional, por defecto 1 año atrás)
@@ -191,5 +175,36 @@ public class ReservationController {
 			return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_NO_CONTENT, allReserves);
 
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_RETRIEVED, allReserves);
+	}
+
+	/**
+     * Elimina una reserva por su ID.
+     * 
+     * @param id ID de la reserva a eliminar
+     * @return ResponseEntity con mensaje de éxito
+     * @DeleteMapping Mapea solicitudes HTTP DELETE a este método
+     */
+	@Operation(summary = "Eliminar reserva", description = "Elimina una reserva por su ID")
+	@SwaggerApiResponses
+	@ApiResponse(responseCode = "204", description = "Reserva eliminada", content = @Content)
+	@DeleteMapping("/{id}")
+	public ResponseEntity<DataResponse> deleteReservation(@PathVariable("id") int id) {
+		reservationService.deleteReservation(id);
+		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REMOVED, null);
+	}
+
+	/**
+	 * Elimina todas las reservas existentes de un usuario
+	 * 
+	 * @return ResponseEntity con mensaje de éxito
+	 * @DeleteMapping Mapea solicitudes HTTP DELETE a este método
+	 */
+	@Operation(summary = "Eliminar todas las reservas de un usuario", description = "Elimina todas las reservas de un usuario pasandole el ID de este")
+	@SwaggerApiResponses
+	@ApiResponse(responseCode = "204", description = "Reservas eliminadas", content = @Content)
+	@DeleteMapping("/user/{id}")
+	public ResponseEntity<DataResponse> deleteAllReservationsByUser(@PathVariable("id") int id) {
+		reservationService.deleteAllReservationsByUser(id);
+		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REMOVED, null);
 	}
 }

@@ -9,8 +9,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -80,9 +82,14 @@ public class Reservation {
      * @param room es la lista de salas reservadas.
      * @NotEmpty es una anotación de validación que indica que la lista de salas no puede
      */
-    @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "reservation_room",
+        joinColumns = @JoinColumn(name = "reservation_id"),
+        inverseJoinColumns = @JoinColumn(name = "room_id")
+    )
     @NotEmpty(message = "Debe seleccionar al menos una sala para la sala")
-    private List<Room> room;
+    private List<Room> rooms;
 
     /**
      * Método que permite obtener el identificador del usuario asociado a la reserva.
@@ -98,9 +105,16 @@ public class Reservation {
      */
     public List<Integer> getRoomsFK() {
         List<Integer> roomsFK = new ArrayList<>();
-        for (int i = 0; i < room.size(); i++) {
-            roomsFK.add(room.get(i).getId());
+        for (int i = 0; i < rooms.size(); i++) {
+            roomsFK.add(rooms.get(i).getId());
         }
         return roomsFK;
+    }
+
+     @PreRemove
+    private void preRemove() {
+        for (Room r : rooms) {
+            r.setReservation(null);
+        }
     }
 }
