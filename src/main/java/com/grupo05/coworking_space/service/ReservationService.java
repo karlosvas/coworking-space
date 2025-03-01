@@ -75,6 +75,11 @@ public class ReservationService {
             }
 
             ReservationDTO reservationDTO = requestReservationDTO.getReservationDTO();
+            List<ReservationDTO> dates =this.findReservationsBetweenDates(reservationDTO.getDateInit(),
+                    reservationDTO.getDateEnd());
+            if (!dates.isEmpty())
+                throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
+
             List<String> emailsParticipants = requestReservationDTO.getEmailsParticipants();
 
             if (reservationDTO == null) {
@@ -101,9 +106,9 @@ public class ReservationService {
             log.info("Reserva creada: {}" , savedReservation.getId());
 
             return reservationMapper.convertToDTO(savedReservation);
-        } catch (RequestException error1) {
-            log.error("Error ", error1);
-            throw error1;
+        } catch (RequestException error) {
+            log.error("Error ", error);
+            throw error;
         } catch (Exception e) {
             throw new RuntimeException("Error en la creación de la reserva: " + e.getMessage());
         }

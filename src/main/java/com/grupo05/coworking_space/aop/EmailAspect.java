@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -46,25 +47,23 @@ public class EmailAspect {
      */
     @AfterReturning(value = "execution(* com.grupo05.coworking_space.service.ReservationService.createReservation(..)) && args(requestReservationDTO)")
     public void sendNotification(RequestReservationDTO requestReservationDTO) {
-            ReservationDTO reservationDTO = requestReservationDTO.getReservationDTO();
-            UserDTO userDTO = userDetailsService.findUserById(reservationDTO.getUserFK());
-            RoomDTO roomDTO=roomService.findRoomById(reservationDTO.getRoomsFK().getFirst());
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-            LocalDateTime dateTime = reservationDTO.getDateInit();
-            String dateFormat = format.format(dateTime);
-            String hora = String.format("%02d:%02d", dateTime.getHour(), dateTime.getMinute());
-            String body = userDTO.getUsername() +
-                          " te invitó a participar de la reunión para el " + dateFormat +
-                          " a las " + hora +"hs en " +
-                            roomDTO.getName();
-            List<String> emailsParticipants = requestReservationDTO.getEmailsParticipants();
-            if(emailsParticipants!=null && !emailsParticipants.isEmpty()) {
-                for(String email : emailsParticipants){
-                    System.out.println("email: " + email+
-                            "body: " + body);
-                    //emailSender.sendEmail(email, "Reserva", body);
-                }
+        ReservationDTO reservationDTO = requestReservationDTO.getReservationDTO();
+        UserDTO userDTO = userDetailsService.findUserById(reservationDTO.getUserFK());
+        RoomDTO roomDTO=roomService.findRoomById(reservationDTO.getRoomsFK().getFirst());
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDateTime dateTime = reservationDTO.getDateInit();
+        String dateFormat = format.format(dateTime);
+        String hora = String.format("%02d:%02d", dateTime.getHour(), dateTime.getMinute());
+        String body = userDTO.getUsername() +
+                " te invitó a participar de la reunión para el " + dateFormat +
+                " a las " + hora +"hs en " +
+                roomDTO.getName();
+        List<String> emailsParticipants = requestReservationDTO.getEmailsParticipants();
+        if(emailsParticipants!=null && !emailsParticipants.isEmpty()) {
+            for(String email : emailsParticipants){
+                emailSender.sendEmail(email, "Reserva", body);
             }
+        }
 
     }
 }
