@@ -32,15 +32,15 @@ public class APIExceptionHandler {
 						ZonedDateTime.now().toLocalDateTime()),
 				HttpStatus.BAD_REQUEST);
 	}
-
+	
 	@ExceptionHandler(RequestException.class)
 	public ResponseEntity<ExceptionDTO> handleApiRequestException(RequestException ex) {
 		ExceptionDTO apiException = new ExceptionDTO(
-				ex.getTitle(),
-				ex.getDetail(),
-				ex.getStatusCode().value(),
-				ex.getReasons(),
-				ZonedDateTime.now(ZoneId.of("Z")).toLocalDateTime());
+			ex.getTitle(),
+			ex.getDetail(),
+			ex.getStatusCode().value(),
+			ex.getReasons(),
+			ZonedDateTime.now(ZoneId.of("Z")).toLocalDateTime());
 
 		return new ResponseEntity<>(apiException, ex.getStatusCode());
 	}

@@ -1,10 +1,11 @@
 package com.grupo05.coworking_space.controller;
 
 import java.util.List;
-
+import java.time.LocalDateTime;
 import com.grupo05.coworking_space.dto.RequestReservationDTO;
 import com.grupo05.coworking_space.enums.ApiError;
 import com.grupo05.coworking_space.exception.RequestException;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.grupo05.coworking_space.annotations.SwaggerApiResponses;
 import com.grupo05.coworking_space.dto.ReservationDTO;
 import com.grupo05.coworking_space.enums.ApiSuccess;
@@ -23,7 +23,6 @@ import com.grupo05.coworking_space.service.ReservationService;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
 import com.grupo05.coworking_space.utils.SwaggerExamples;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -32,9 +31,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Esta clase define los endpoints para gestionar las reservas, mas informacion en swagger
@@ -43,6 +41,7 @@ import java.time.LocalDateTime;
  * @RequestMapping para indicar la ruta de acceso a los endpoints
  * @Tag para documentar el controlador
  */
+@Validated
 @RestController
 @RequestMapping(value = "/reservations", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Reservation", description = "Enpoints para gestionar las reservas")
@@ -124,7 +123,12 @@ public class ReservationController {
 			examples = { @ExampleObject(value = SwaggerExamples.DataResponseExamples.CREATED_EXAMPLE) }))
 	@PostMapping
 	public ResponseEntity<DataResponse> createReservation(@RequestBody RequestReservationDTO requestReservationDTO) {
-		ReservationDTO createdReservation = reservationService.createReservation(requestReservationDTO);
+			List<ReservationDTO> dates = reservationService.findReservationsBetweenDates(requestReservationDTO.getReservationDTO().getDateInit(),
+			requestReservationDTO.getReservationDTO().getDateEnd());
+			if (!dates.isEmpty())
+				throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
+			
+			ReservationDTO createdReservation = reservationService.createReservation(requestReservationDTO);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_CREATED, createdReservation);
 	}
 
@@ -141,7 +145,7 @@ public class ReservationController {
 	@ApiResponse(responseCode = "200", description = "Reserva actualizada",
 	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@PutMapping()
-	public ResponseEntity<DataResponse> updateReservation(@RequestBody ReservationDTO reservation) {
+	public ResponseEntity<DataResponse> updateReservation(@Valid @RequestBody ReservationDTO reservation) {
 		ReservationDTO updatedReservation = reservationService.updateResevation(reservation);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_UPDATED, updatedReservation);
 	}
