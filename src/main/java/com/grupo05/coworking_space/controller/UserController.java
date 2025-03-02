@@ -18,14 +18,15 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @RequestMapping para indicar la ruta de acceso a los endpoints
  * @Tag para documentar el controlador
  */
+@Validated
 @RestController
 @RequestMapping("/users")
 @Tag(name = "User", description = "Endpoints para gestionar los usuarios")
@@ -88,7 +90,7 @@ public class UserController {
     schema = @Schema(implementation = DataResponse.class),
     examples = { @ExampleObject(value = SwaggerExamples.DataResponseExamples.CREATED_EXAMPLE) }))
     @PostMapping("/register")
-    public ResponseEntity<DataResponse> registrarUsuario(@RequestBody UserDTO user) {
+    public ResponseEntity<DataResponse> registrarUsuario(@Valid @RequestBody UserDTO user) {
         try {
             // Verifica si hay usuario existente si lo hay devolbemos el error
             userService.findByUsernameAndEmail(user.getUsername(), user.getEmail());

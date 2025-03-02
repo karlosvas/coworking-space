@@ -14,15 +14,16 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.grupo05.coworking_space.enums.ReservationStatus;
 
@@ -45,20 +46,22 @@ public class Reservation {
     @Column(name = "reservation_id", unique = true)
     private int id;
 
-    @NotNull(message = "Deve ingresar una fecha de inicio")
+    @NotNull(message = "{field.null}")
+    @FutureOrPresent(message = "{reservation.date}")
     @Column(name = "start_date", nullable = false)
     private LocalDateTime dateInit;
 
-    @NotNull(message = "Deve ingresar una fecha de fin")
+    @NotNull(message = "{field.null}")
+    @FutureOrPresent(message = "{reservation.date}")
     @Column(name = "end_date", nullable = false)
     private LocalDateTime dateEnd;
 
-    @NotNull(message = "El estado no puede estar vacío")
+    @NotNull(message = "{field.null}")
     @Enumerated(EnumType.STRING)
     @Column(name = "reservation_status", nullable = false)
     private ReservationStatus reserveStatus;
 
-    @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres")
+    @Size(max = 255, message = "{reservation.max.description}")
     @Column(name = "description", nullable = true)
     private String description;
 
@@ -68,7 +71,9 @@ public class Reservation {
      * @JoinColumn es una anotación de JPA que indica la columna de la tabla de la base de
      * datos que se utilizará para la relación.
      * @param user es el usuario que realizó la reserva.
+     * @Valid es una anotación de Bean Validation que indica que la validación debe aplicarse a la propiedad.
      */
+    @Valid
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
