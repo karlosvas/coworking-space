@@ -27,10 +27,10 @@ public class DataResponse {
 	@Schema(description = "Indica si hay un error", type = "boolean", example = "false")
 	private final boolean hasError;
 
-	@Schema(description = "Mensaje de la respuesta", type = "string", example = "Operación exitosa")
+	@Schema(description = "Mensaje de la respuesta", type = "string")
 	private final String message;
 
-	@Schema(description = "Código de estado HTTP", type = "integer")
+	@Schema(description = "Código de estado HTTP", type = "integer", example = "200")
 	private final int statusCode;
 
 	@Schema(description = "Marca de tiempo de la respuesta", format = "date-time")

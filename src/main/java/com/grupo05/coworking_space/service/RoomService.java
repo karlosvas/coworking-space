@@ -42,10 +42,12 @@ public class RoomService {
 	 * @throws RequestException Si ocurre un error en la base de datos (DATABASE_ERROR)
 	 *                          o un error interno inesperado (INTERNAL_SERVER_ERROR)
 	 */
+	
 	public List<RoomDTO> findAllRooms() {
 		try {
+			
 			List<Room> rooms = roomRepository.findAll();
-
+			log.info("Rooms found: {}", rooms.size());
 			return rooms.stream().map(roomMapper::convertToDTO).collect(Collectors.toList());
 		} catch (DataAccessException ex) {
 			throw new RequestException(ApiError.DATABASE_ERROR);
@@ -71,6 +73,7 @@ public class RoomService {
 				throw new RequestException(ApiError.RECORD_NOT_FOUND);
 			}
 
+			log.info("Room found: {}", optionalRoom.get().getId());
 			return roomMapper.convertToDTO(optionalRoom.get());
 		} catch (RequestException ex) {
 			throw ex;
@@ -97,6 +100,7 @@ public class RoomService {
 
 			Room savedRoom = roomRepository.save(roomToSave);
 
+			log.info("Room created: {}", savedRoom.getId());
 			return roomMapper.convertToDTO(savedRoom);
 		} catch (DataIntegrityViolationException ex) {
 			Throwable cause = ex.getCause();
@@ -132,6 +136,7 @@ public class RoomService {
 			roomFound.setRoomStatus(room.getRoomStatus());
 			roomFound.setCapacity(room.getCapacity());
 
+			log.info("Room updated: {}", roomFound.getId());
 			return roomMapper.convertToDTO(roomRepository.save(roomFound));
 		} catch (RequestException ex) {
 			throw ex;
@@ -164,6 +169,8 @@ public class RoomService {
 			RoomDTO result = this.findRoomById(id);
 
 			roomRepository.deleteById(result.getId());
+			
+			log.info("Room deleted: {}", result.getId());
 		} catch (RequestException ex) {
 			throw ex;
 		} catch (DataIntegrityViolationException ex) {

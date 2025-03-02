@@ -9,9 +9,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -73,10 +76,19 @@ public class Reservation {
     /**
      * @OneToMany es una anotación de JPA que indica que la relación entre las entidades
      * es de uno a muchos. En este caso, una reserva puede tener varias salas asociadas.
+     * CascadeType.PERSIST y CascadeType.MERGE son opciones de cascada que indican que
+     * las operaciones de persistencia y fusión deben propagarse a las entidades asociadas.
+     * 
      * @param room es la lista de salas reservadas.
+     * @NotEmpty es una anotación de validación que indica que la lista de salas no puede
      */
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
-    private List<Room> room;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "reservation_room",
+        joinColumns = @JoinColumn(name = "reservation_id"),
+        inverseJoinColumns = @JoinColumn(name = "room_id")
+    )
+    private List<Room> rooms;
 
     /**
      * Método que permite obtener el identificador del usuario asociado a la reserva.
@@ -92,9 +104,16 @@ public class Reservation {
      */
     public List<Integer> getRoomsFK() {
         List<Integer> roomsFK = new ArrayList<>();
-        for (int i = 0; i < room.size(); i++) {
-            roomsFK.add(room.get(i).getId());
+        for (int i = 0; i < rooms.size(); i++) {
+            roomsFK.add(rooms.get(i).getId());
         }
         return roomsFK;
+    }
+
+     @PreRemove
+    private void preRemove() {
+        for (Room r : rooms) {
+            r.setReservation(null);
+        }
     }
 }

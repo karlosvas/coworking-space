@@ -10,12 +10,15 @@ import com.grupo05.coworking_space.service.ReservationService;
 import com.grupo05.coworking_space.service.UserDetailsServiceImpl;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
+import com.grupo05.coworking_space.utils.SwaggerExamples;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.ArrayList;
@@ -78,19 +81,22 @@ public class UserController {
      * @RequestBody Vincula el cuerpo de la solicitud HTTP al parámetro del método
      * @PostMapping Mapea solicitudes HTTP POST a este método
      */
-    @Operation(summary = "Registrar usuario", description = "Registra un usuario y genera un token")
+    @Operation(summary = "Registrar usuario", description = "Registra un usuario en la base de datos con la contraseña encodeada")
     @SwaggerApiResponses
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-    })
+    @ApiResponse(responseCode = "201", description = "Usuario creado con éxito",
+    content = @Content(mediaType = "application/json",
+    schema = @Schema(implementation = DataResponse.class),
+    examples = { @ExampleObject(value = SwaggerExamples.DataResponseExamples.CREATED_EXAMPLE) }))
     @PostMapping("/register")
     public ResponseEntity<DataResponse> registrarUsuario(@RequestBody UserDTO user) {
         try {
-            userService.findByUsername(user.getUsername());
+            // Verifica si hay usuario existente si lo hay devolbemos el error
+            userService.findByUsernameAndEmail(user.getUsername(), user.getEmail());
             return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_ALREADY_REGISTERED, user);
         } catch (RequestException e) {
-            userService.registrerUser(user, Role.ROLE_USER);
-            return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REGISTERED, user);
+            // Si no existe registramos el usuario
+            UserDTO userDTO = userService.registrerUser(user, Role.ROLE_USER);
+            return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REGISTERED, userDTO);
         }
     }
 
@@ -103,11 +109,9 @@ public class UserController {
      * @RequestBody Vincula el cuerpo de la solicitud HTTP al parámetro del método
      * @PostMapping Mapea solicitudes HTTP POST a este método
      */
-    @Operation(summary = "Logear usuario", description = "Logea un usuario y genera un token")
+    @Operation(summary = "Logear usuario", description = "Logea un usuario y genera un token de sesión")
     @SwaggerApiResponses
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login de usuario requiere haberse registrado previamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-    })
+    @ApiResponse(responseCode = "200", description = "Login de usuario requiere haberse registrado previamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
     @PostMapping("/login")
     public ResponseEntity<DataResponse> loginUsuario(@RequestBody UserDTO userRequest) {
         // Llamamos a find by username para comprobar si el usuario existe ya que si no lo hace lanzara una excepcion
@@ -134,7 +138,7 @@ public class UserController {
     @GetMapping("/resources/{id}")
     public ResponseEntity<DataResponse>  findReservationsById(@PathVariable("id") int id) {
         // Obtenemos todas las reservas
-        List<ReservationDTO> allResergvations = reservationService.findAllReservations();
+        List<ReservationDTO> allResergvations = reservationService.findAllReservations(id);
 
         // Creamos una nueva lista para almacenar las reservas del usuario
         List<ReservationDTO> newAllReservation = new ArrayList<>();
@@ -186,12 +190,9 @@ public class UserController {
      */
     @Operation(summary = "Eliminar usuario", description = "Elimina un usuario por su ID")
     @SwaggerApiResponses
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Usuario eliminad@", content = @Content)
-    })
+    @ApiResponse(responseCode = "204", description = "Usuario eliminad@", content = @Content)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<DataResponse> deleteRoom(@PathVariable("id") int id) {
+    public ResponseEntity<DataResponse> deleteUser(@PathVariable("id") int id) {
         userService.deleteUserByID(id);
         return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REMOVED, null);
     }
@@ -207,13 +208,11 @@ public class UserController {
      * @PostMapping Mapea solicitudes HTTP POST a este método
      * @PreAuthorize Restringe el acceso solo a usuarios con rol ADMIN
      */
-    @Operation(summary = "Registrar administrador", description = "Registra un administrador y genera un token")
+    @Operation(summary = "Registrar administrador", description = "Registra un administrador, enpoint reservado para administradores, si no lo es contacte con el administrador")
     @SwaggerApiResponses
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Registro de administrador, solo para administradores", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-    })
+    @ApiResponse(responseCode = "201", description = "Registro de un nuevo administrador, endpoint solo para administradores", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class),
+    examples = { @ExampleObject(value = SwaggerExamples.DataResponseExamples.CREATED_EXAMPLE) }))
     @PostMapping("/admin/register")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DataResponse> registrarAdmin(@RequestBody UserDTO user) {
         UserDTO newAdmin = userService.registrerUser(user, Role.ROLE_ADMIN);
         return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_REGISTERED, newAdmin);

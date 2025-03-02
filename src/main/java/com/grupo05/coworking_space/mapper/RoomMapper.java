@@ -40,7 +40,9 @@ public class RoomMapper {
 			Optional<Room> roomOptional = roomRepository.findById(i);
 			if (roomOptional.isPresent()) {
 				Room room = roomOptional.get();
-				room.setReservation(reservation);
+				List<Reservation> reservations = room.getReservations();
+				reservations.add(reservation);
+				room.setReservations(reservations);
 				rooms.add(room);
 			} else {
 				throw new RequestException(ApiError.BAD_REQUEST);
