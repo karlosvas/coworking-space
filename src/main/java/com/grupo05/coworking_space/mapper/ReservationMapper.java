@@ -1,5 +1,7 @@
 package com.grupo05.coworking_space.mapper;
 
+import java.util.ArrayList;
+
 import org.springframework.stereotype.Component;
 
 import com.grupo05.coworking_space.dto.ReservationDTO;

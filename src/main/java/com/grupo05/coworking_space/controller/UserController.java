@@ -91,7 +91,7 @@ public class UserController {
     public ResponseEntity<DataResponse> registrarUsuario(@RequestBody UserDTO user) {
         try {
             // Verifica si hay usuario existente si lo hay devolbemos el error
-            userService.findByUsername(user.getUsername());
+            userService.findByUsernameAndEmail(user.getUsername(), user.getEmail());
             return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_ALREADY_REGISTERED, user);
         } catch (RequestException e) {
             // Si no existe registramos el usuario
@@ -138,7 +138,7 @@ public class UserController {
     @GetMapping("/resources/{id}")
     public ResponseEntity<DataResponse>  findReservationsById(@PathVariable("id") int id) {
         // Obtenemos todas las reservas
-        List<ReservationDTO> allResergvations = reservationService.findAllReservations();
+        List<ReservationDTO> allResergvations = reservationService.findAllReservations(id);
 
         // Creamos una nueva lista para almacenar las reservas del usuario
         List<ReservationDTO> newAllReservation = new ArrayList<>();

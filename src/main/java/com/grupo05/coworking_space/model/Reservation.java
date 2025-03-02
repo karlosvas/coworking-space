@@ -88,7 +88,6 @@ public class Reservation {
         joinColumns = @JoinColumn(name = "reservation_id"),
         inverseJoinColumns = @JoinColumn(name = "room_id")
     )
-    @NotEmpty(message = "Debe seleccionar al menos una sala para la sala")
     private List<Room> rooms;
 
     /**

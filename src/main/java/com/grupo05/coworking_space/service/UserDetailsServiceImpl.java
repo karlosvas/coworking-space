@@ -17,14 +17,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Implementación del servicio de gestión de usuarios para la autenticación y autorización.
@@ -149,6 +152,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
+    public UserDTO findByUsernameAndEmail(String username,String email) {
+        try {
+            Optional<User> user = userRepository.findByUsernameAndEmail(username, email);
+
+            if (user.isEmpty()) 
+                throw new RequestException(ApiError.RECORD_NOT_FOUND);
+            log.info("Usuario encontrado: {}", user.get().getId());
+            return userMapper.convertToDTO(user.get());
+        } catch (RequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar el usuario: " + e.getMessage());
+        }
+    }
+
     /**
      * Registra un nuevo usuario en el sistema.
      * <p>
@@ -163,8 +181,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     public UserDTO registrerUser(UserDTO user, Role role) {
         try {
-
-            if (userRepository.findByEmail(user.getEmail()).isPresent()) 
+            log.info(adminDefaultPassword);
+            if (userRepository.findByUsernameAndEmail(user.getUsername(), user.getEmail()).isPresent()) 
                 throw new RequestException(ApiError.DUPLICATE_EMAIL);
 
             User userEntity = userMapper.convertToEntity(user);
@@ -254,7 +272,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
             if (user.isEmpty()) 
                 throw new RequestException(ApiError.RECORD_NOT_FOUND);
-
+            //-------
+            User userDB = user.get();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(userDB.getRole().equals(Role.ROLE_ADMIN) && !authentication.getName().equals("admin")){
+                throw new RequestException(ApiError.AUTHENTICATION_FAILED);
+            }
+            
+            // ROLE_ADMIN
             userRepository.deleteById(id);
             log.info("Usuario eliminado: {}", user.get().getId());
             return userMapper.convertToDTO(user.get());

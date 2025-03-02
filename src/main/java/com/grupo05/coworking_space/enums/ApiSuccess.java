@@ -14,7 +14,7 @@ public enum ApiSuccess {
 	RESOURCE_REMOVED("Resource Removed", HttpStatus.NO_CONTENT),
 	RESOURCE_NO_CONTENT("Resource No Content", HttpStatus.NO_CONTENT),
 	RESOURCE_REGISTERED("Correctly registered user", HttpStatus.OK),
-	RESOURCE_ALREADY_REGISTERED("Resource Already Registered", HttpStatus.OK),
+	RESOURCE_ALREADY_REGISTERED("Resource Already Registered", HttpStatus.BAD_REQUEST),
 	USER_LOGGED_IN("User logged in successfully", HttpStatus.OK);
 
 	private final String message;

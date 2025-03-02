@@ -29,4 +29,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
      * @return Usuario opcional con el rol proporcionado, o vacío si no existe null
      */
     Optional<User> findByRole(Role role);
+
+    /*
+     * 
+     */
+    Optional<User> findByUsernameAndEmail(String username, String email);
 }
