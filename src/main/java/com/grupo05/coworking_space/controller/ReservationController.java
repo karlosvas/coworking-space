@@ -66,12 +66,12 @@ public class ReservationController {
 	}
 
 	/**
-     * Obtiene todas las reservas existentes.
+     * Obtiene todas las reservas existentes, que pertenezcan al usuario logeado.
      *
      * @return ResponseEntity con la lista de reservas o mensaje de no contenido
      * @GetMapping Mapea solicitudes HTTP GET a este método
      */
-	@Operation(summary = "Obtener todas las reservas", description = "Devuelve una lista con todas las reservas de tipo ReservationDTO")
+	@Operation(summary = "Obtener todas las reservas que pertenezcan al usuario logeado", description = "Devuelve una lista con todas las reservas de tipo ReservationDTO")
 	@SwaggerApiResponses
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Lista de reservas",
@@ -80,8 +80,8 @@ public class ReservationController {
 			content = @Content)
 	})
 	@GetMapping
-	public ResponseEntity<DataResponse> findAllReservations() {
-		List<ReservationDTO> allReserves = reservationService.findAllReservations();
+	public ResponseEntity<DataResponse> findAllReservationsFiltered() {
+		List<ReservationDTO> allReserves = reservationService.findAllReservationsFiltered();
 
 		if (allReserves.isEmpty())
 			return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_NO_CONTENT, allReserves);
@@ -140,10 +140,9 @@ public class ReservationController {
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "200", description = "Reserva actualizada",
 	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
-	@PutMapping("/{id}")
-	public ResponseEntity<DataResponse> updateReservation(@PathVariable("id") int id,
-			@RequestBody ReservationDTO reservation) {
-		ReservationDTO updatedReservation = reservationService.updateResevation(reservation, id);
+	@PutMapping()
+	public ResponseEntity<DataResponse> updateReservation(@RequestBody ReservationDTO reservation) {
+		ReservationDTO updatedReservation = reservationService.updateResevation(reservation);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_UPDATED, updatedReservation);
 	}
 

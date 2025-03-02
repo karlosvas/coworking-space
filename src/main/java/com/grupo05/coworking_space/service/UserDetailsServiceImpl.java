@@ -17,14 +17,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Implementación del servicio de gestión de usuarios para la autenticación y autorización.
@@ -33,9 +36,9 @@ import org.springframework.stereotype.Service;
  * gestión de usuarios. También se encarga de crear un usuario administrador por defecto
  * cuando se inicia la aplicación.
  * 
- * @see UserDetailsService Interfaz de Spring Security para cargar usuarios por nombre de usuario.
- * @Slf4j para habilitar el uso de logs en la aplicación.
- * @Service para indicar que es un servicio de Spring.
+* @see org.springframework.security.core.userdetails.UserDetailsService Interfaz de Spring Security para cargar usuarios por nombre de usuario.
+ * @see lombok.extern.slf4j.Slf4j Anotación de Lombok para habilitar el uso de logs en la aplicación.
+ * @see org.springframework.stereotype.Service Anotación de Spring para indicar que es un servicio.
  */
 @Slf4j
 @Service
@@ -50,13 +53,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final JwtUtil jwtUtil;
 
     /**
-     * Constructor que inyecta todas las dependencias necesarias.
-     * 
-     * @param userRepository Repositorio para acceder a datos de usuarios
-     * @param userMapper Mapper para convertir entre entidades y DTOs
-     * @param passwordEncoder Codificador de contraseñas (inyectado de forma lazy)
-     * @param jwtUtil Utilidad para manejar tokens JWT
-     */
+    * Implementación del servicio de gestión de usuarios para la autenticación y autorización.
+    * Esta clase proporciona funcionalidades para cargar usuarios por nombre de usuario,
+    * registrar nuevos usuarios, iniciar sesión y otras operaciones relacionadas con la
+    * gestión de usuarios. También se encarga de crear un usuario administrador por defecto
+    * cuando se inicia la aplicación.
+    * 
+    * @param userRepository Repositorio para acceder a datos de usuarios
+    * @param userMapper Mapper para convertir entre entidades y DTOs
+    * @param passwordEncoder Codificador de contraseñas (inyectado de forma lazy)
+    * @param jwtUtil Utilidad para manejar tokens JWT
+    */
     public UserDetailsServiceImpl(UserRepository userRepository, UserMapper userMapper,
             @Lazy PasswordEncoder passwordEncoder,
             JwtUtil jwtUtil) {
@@ -149,6 +156,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
+    public UserDTO findByUsernameAndEmail(String username,String email) {
+        try {
+            Optional<User> user = userRepository.findByUsernameAndEmail(username, email);
+
+            if (user.isEmpty()) 
+                throw new RequestException(ApiError.RECORD_NOT_FOUND);
+            log.info("Usuario encontrado: {}", user.get().getId());
+            return userMapper.convertToDTO(user.get());
+        } catch (RequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar el usuario: " + e.getMessage());
+        }
+    }
+
     /**
      * Registra un nuevo usuario en el sistema.
      * <p>
@@ -163,8 +185,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     public UserDTO registrerUser(UserDTO user, Role role) {
         try {
-
-            if (userRepository.findByEmail(user.getEmail()).isPresent()) 
+            log.info(adminDefaultPassword);
+            if (userRepository.findByUsernameAndEmail(user.getUsername(), user.getEmail()).isPresent()) 
                 throw new RequestException(ApiError.DUPLICATE_EMAIL);
 
             User userEntity = userMapper.convertToEntity(user);
@@ -254,7 +276,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
             if (user.isEmpty()) 
                 throw new RequestException(ApiError.RECORD_NOT_FOUND);
-
+            
+            User userDB = user.get();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(userDB.getRole().equals(Role.ROLE_ADMIN) && !authentication.getName().equals("admin")){
+                throw new RequestException(ApiError.AUTHENTICATION_FAILED);
+            }
+            
+            // ROLE_ADMIN
             userRepository.deleteById(id);
             log.info("Usuario eliminado: {}", user.get().getId());
             return userMapper.convertToDTO(user.get());
@@ -266,5 +295,36 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         } catch (Exception e) {
             throw new RuntimeException("Error al eliminar el usuario: " + e.getMessage());
         }
+    }
+
+    /**
+     * Actualiza los datos de un usuario en el sistema.
+     * 
+     * @param user DTO con los datos del usuario a actualizar
+     * @return DTO con los datos del usuario actualizado
+     * @throws RequestException Si no se encuentra el usuario con el ID proporcionado
+     * @throws RuntimeException Si ocurre otro tipo de error durante la actualización
+     */
+    public boolean verificationSameUser(int id){
+        return (id == this.getCurrentUserId()) ?  true : false;
+    }
+
+    /**
+     * Actualiza los datos de un usuario en el sistema actualmente logeado
+     * 
+     * @return si el suuario esta logeado devuelbe el id, si no devuelve null
+     */
+    public Integer getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            try {
+                UserDTO user = this.findByUsername(username);
+                return user != null ? user.getId() : null;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
     }
 }

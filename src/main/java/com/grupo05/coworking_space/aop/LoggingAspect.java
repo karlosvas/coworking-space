@@ -1,4 +1,4 @@
-package com.grupo05.coworking_space.annotations;
+package com.grupo05.coworking_space.aop;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
