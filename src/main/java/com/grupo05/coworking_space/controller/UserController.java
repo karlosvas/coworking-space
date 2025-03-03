@@ -11,17 +11,14 @@ import com.grupo05.coworking_space.service.UserDetailsServiceImpl;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
 import com.grupo05.coworking_space.utils.SwaggerExamples;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -132,7 +129,7 @@ public class UserController {
      * @PathVariable Vincula el parámetro de la URL al parámetro del método
      * @GetMapping Mapea solicitudes HTTP GET a este método
      */
-    @Operation(summary = "Recursos del usuario", description = "Obtene todos los recursos de el usuario, como sus reservas actuales")
+    @Operation(summary = "Recursos del usuarios", description = "Obtene los recursos de cualquier usuario, como sus reservas actuales, endpoint reservado para administradores")
     @SwaggerApiResponses
     @ApiResponse(responseCode = "200", description = "Recursos de el usuario, requiere haver obtenido un token al logearse previamente",
     content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
@@ -163,7 +160,7 @@ public class UserController {
      * @GetMapping Mapea solicitudes HTTP GET a este método
      * @PreAuthorize Restringe el acceso solo a usuarios con rol ADMIN
      */
-    @Operation(summary = "Obtener todos los usuarios", description = "Devuelve una lista con todos los usuarios")
+    @Operation(summary = "Obtener todos los usuarios", description = "Devuelve una lista con todos los usuarios, endpoint reservado a administradores")
     @SwaggerApiResponses
     @ApiResponse(responseCode = "200", description = "Recursos de todos los usuarios, solo para administradores", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
     @GetMapping("/list")
@@ -187,9 +184,9 @@ public class UserController {
      * @DeleteMapping Mapea solicitudes HTTP DELETE a este método
      * @PreAuthorize Restringe el acceso solo a usuarios con rol ADMIN
      */
-    @Operation(summary = "Eliminar usuario", description = "Elimina un usuario por su ID")
+    @Operation(summary = "Eliminar usuario", description = "Elimina un usuario por su ID , endpoint reservado para administradores")
     @SwaggerApiResponses
-    @ApiResponse(responseCode = "204", description = "Usuario eliminad@", content = @Content)
+    @ApiResponse(responseCode = "204", description = "Usuario eliminado", content = @Content)
     @DeleteMapping("/{id}")
     public ResponseEntity<DataResponse> deleteUser(@PathVariable("id") int id) {
         userService.deleteUserByID(id);
@@ -198,7 +195,6 @@ public class UserController {
 
     /**
      * Registra un nuevo administrador en el sistema.
-     * <p>
      * Este endpoint está restringido a usuarios con rol de ADMIN.
      * 
      * @param user DTO con la información del usuario administrador a registrar
@@ -207,7 +203,7 @@ public class UserController {
      * @PostMapping Mapea solicitudes HTTP POST a este método
      * @PreAuthorize Restringe el acceso solo a usuarios con rol ADMIN
      */
-    @Operation(summary = "Registrar administrador", description = "Registra un administrador, enpoint reservado para administradores, si no lo es contacte con el administrador")
+    @Operation(summary = "Registrar administrador", description = "Registra un administrador, enpoint reservado para administradores")
     @SwaggerApiResponses
     @ApiResponse(responseCode = "201", description = "Registro de un nuevo administrador, endpoint solo para administradores", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class),
     examples = { @ExampleObject(value = SwaggerExamples.DataResponseExamples.CREATED_EXAMPLE) }))

@@ -9,6 +9,16 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Filtro personalizado para modificar la interfaz de Swagger UI.
+ * Este filtro intercepta las respuestas HTTP de la página de Swagger UI
+ * e inyecta un script JavaScript personalizado antes del cierre del tag body.
+ * Esto permite extender y personalizar la funcionalidad de Swagger UI sin
+ * modificar directamente los archivos originales.
+ * 
+ * Implementa la interfaz Filter de Jakarta Servlet para integrarse en el
+ * ciclo de vida de procesamiento de peticiones HTTP.
+ */
 public class SwaggerUIFilter implements Filter {
     
     @Override

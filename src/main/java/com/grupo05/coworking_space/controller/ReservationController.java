@@ -70,7 +70,7 @@ public class ReservationController {
      * @return ResponseEntity con la lista de reservas o mensaje de no contenido
      * @GetMapping Mapea solicitudes HTTP GET a este método
      */
-	@Operation(summary = "Obtener todas las reservas que pertenezcan al usuario logeado", description = "Devuelve una lista con todas las reservas de tipo ReservationDTO")
+	@Operation(summary = "Obtener todas las reservas del usuario actual", description = "Devuelve una lista con todas las reservas que pertenezcan unicamente al usuario logeado")
 	@SwaggerApiResponses
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Lista de reservas",
@@ -115,7 +115,7 @@ public class ReservationController {
      * @RequestBody Vincula el cuerpo de la solicitud HTTP al parámetro del método
      * @PostMapping Mapea solicitudes HTTP POST a este método
      */
-	@Operation(summary = "Crear reserva", description = "Crea una nueva reserva con la informacion enviada, los FK deven ser valores existentes en la base de datos. IMPORTANTE: las fechas de reserva no puedes ser menores a la fecha actual")
+	@Operation(summary = "Crear reserva", description = "Crea una nueva reserva con la informacion enviada, los FK deven ser valores existentes en la base de datos. IMPORTANTE: las fechas de reserva no pueden ser menores a la fecha actual, y solo se pueden hacer reservas para el usaurio actualmente logeado")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "201", description = "Reserva creada",
 			content = @Content(mediaType = "application/json", 
@@ -140,12 +140,16 @@ public class ReservationController {
      * @return ResponseEntity con la reserva actualizada
      * @PutMapping Mapea solicitudes HTTP PUT a este método
      */
-	@Operation(summary = "Actualizar reserva", description = "Actualiza una reserva con la informacion enviada")
+	@Operation(summary = "Actualizar reserva", description = "Actualiza una reserva con la información enviada")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "200", description = "Reserva actualizada",
 	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
 	@PutMapping()
 	public ResponseEntity<DataResponse> updateReservation(@Valid @RequestBody ReservationDTO reservation) {
+		List<ReservationDTO> dates = reservationService.findReservationsBetweenDates(reservation.getDateInit(),
+		reservation.getDateEnd());
+			if (!dates.isEmpty())
+				throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
 		ReservationDTO updatedReservation = reservationService.updateResevation(reservation);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_UPDATED, updatedReservation);
 	}
@@ -153,18 +157,22 @@ public class ReservationController {
 	/**
      * Busca reservas entre un rango de fechas.
      *
-     * @param dateInit Fecha de inicio (opcional, por defecto 1 año atrás)
-     * @param dateEnd Fecha final (opcional, por defecto 1 año adelante)
+     * @param dateInit Fecha de inicio 
+     * @param dateEnd Fecha final 
      * @return ResponseEntity con la lista de reservas encontradas
      * @throws IllegalArgumentException si la fecha inicial es posterior a la final
      * @RequestParam Vincula los parámetros de consulta de la URL a los parámetros del método
      * @GetMapping Mapea solicitudes HTTP GET a este método, en la ruta /filters
      * @DateTimeFormat Define el formato de la fecha recibida
      */
-	@Operation(summary = "Obtener reservas entre fechas", description = "Devuelve una lista con todas las reservas entre dos fechas")
+	@Operation(summary = "Obtener reservas entre fechas", description = "Devuelve una lista con todas las reservas entre dos fechas, los valores deven ser mayores a la fecha actual y la fecha inicial no puede ser mayor a la fecha final")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "200", description = "Lista de reservas entre fechas",
-	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
+	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class), examples = {
+        @ExampleObject(
+            value = "{\"statusCode\":200,\"message\":\"Recursos recuperados exitosamente\",\"data\":[{\"id\":1,\"dateInit\":\"2025-02-03T10:00:00\",\"dateEnd\":\"2025-02-03T12:00:00\",\"reserveStatus\":\"CONFIRMED\",\"description\":\"Reunión de equipo\",\"user\":{\"id\":1,\"username\":\"usuario1\"},\"rooms\":[{\"id\":101,\"name\":\"Sala A\"}]},{\"id\":2,\"dateInit\":\"2025-02-15T14:30:00\",\"dateEnd\":\"2025-02-15T16:00:00\",\"reserveStatus\":\"PENDING\",\"description\":\"Entrevista\",\"user\":{\"id\":1,\"username\":\"usuario1\"},\"rooms\":[{\"id\":102,\"name\":\"Sala B\"}]}]}"
+        )
+    }))
 	@GetMapping("/filters")
 	public ResponseEntity<DataResponse> findReservationsBetweenDates(
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateInit,
@@ -176,7 +184,7 @@ public class ReservationController {
 		LocalDateTime end = dateEnd != null ? dateEnd : defaultDateEnd;
 
 		if (start.isAfter(end)) {
-			throw new IllegalArgumentException("La fecha inicial no puede ser posterior a la fecha final");
+			throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
 		}
 
 		List<ReservationDTO> allReserves = reservationService.findReservationsBetweenDates(start, end);
@@ -194,7 +202,7 @@ public class ReservationController {
      * @return ResponseEntity con mensaje de éxito
      * @DeleteMapping Mapea solicitudes HTTP DELETE a este método
      */
-	@Operation(summary = "Eliminar reserva", description = "Elimina una reserva por su ID")
+	@Operation(summary = "Eliminar reserva", description = "Elimina una reserva por su ID, enpoint solo para administradores")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "204", description = "Reserva eliminada", content = @Content)
 	@DeleteMapping("/{id}")
@@ -209,7 +217,7 @@ public class ReservationController {
 	 * @return ResponseEntity con mensaje de éxito
 	 * @DeleteMapping Mapea solicitudes HTTP DELETE a este método
 	 */
-	@Operation(summary = "Eliminar todas las reservas de un usuario", description = "Elimina todas las reservas de un usuario pasandole el ID de este")
+	@Operation(summary = "Eliminar todas las reservas de un usuario", description = "Elimina todas las reservas de un usuario pasandole el ID de este, enpoint solo para administradores")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "204", description = "Reservas eliminadas", content = @Content)
 	@DeleteMapping("/user/{id}")

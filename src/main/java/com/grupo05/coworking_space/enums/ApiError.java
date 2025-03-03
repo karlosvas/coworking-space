@@ -5,6 +5,10 @@ import org.springframework.http.HttpStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Enumeración de errores de la API
+ * @Getter, @RequiredArgsConstructor son anotaciones de Lombok para generar automáticamente los getters y constructores con todos los argumentos
+ */
 @Getter
 @RequiredArgsConstructor
 public enum ApiError {
@@ -87,7 +91,11 @@ public enum ApiError {
 	DATE_NOT_AVAILABLE(
 			HttpStatus.CONFLICT,
 			"Date Not Available",
-			"Date is not available for reservation, because it is already reserved");
+			"Date is not available for reservation, because it is already reserved"),
+	DATE_NOT_AVAILABLE_AFTER(
+			HttpStatus.CONFLICT,
+			"Date Not Available",
+			"Date is not available because it is after the end date of the reservation");
 
 	private final HttpStatus status;
 	private final String title;

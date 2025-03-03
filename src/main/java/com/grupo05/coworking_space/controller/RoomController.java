@@ -7,7 +7,6 @@ import com.grupo05.coworking_space.service.RoomService;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
 import com.grupo05.coworking_space.utils.SwaggerExamples;
-
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +26,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
 import java.util.List;
 
 @Validated
@@ -52,9 +49,7 @@ public class RoomController {
 	 *
 	 * @return ResponseEntity con lista de salas en el cuerpo de la respuesta
 	 */
-	@Operation(
-		summary = "Obtener todas las salas", description = "Devuelve una lista con todas las salas"
-	)
+	@Operation(summary = "Obtener todas las salas", description = "Devuelve una lista con todas las salas")
 	@SwaggerApiResponses
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Lista de salas",
@@ -77,7 +72,7 @@ public class RoomController {
 	 * @param id Identificador numérico de la sala
 	 * @return ResponseEntity con datos de la sala encontrada
 	 */
-	@Operation(summary = "Obtener sala por id", description = "Devuelve una sala por su ID")
+	@Operation(summary = "Obtener sala por id", description = "Devuelve la sala por correspondiente a su ID")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "200", description = "Sala encontrada",
 	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
@@ -94,9 +89,7 @@ public class RoomController {
 	 * @param roomDTO Datos de la sala a crear en el cuerpo de la petición
 	 * @return ResponseEntity con datos de la sala creada
 	 */
-	@Operation(
-		summary = "Crear sala", description = "Crea una nueva sala con la informacion enviada"
-	)
+	@Operation(summary = "Crear sala", description = "Crea una nueva sala con la información enviada, no puede haber dos con el nombre repetido")
 	@SwaggerApiResponses
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Sala creada",
@@ -118,9 +111,7 @@ public class RoomController {
 	 * @param room Nuevos datos de la sala en el cuerpo de la petición
 	 * @return ResponseEntity con datos actualizados de la sala
 	 */
-	@Operation(
-		summary = "Actualizar sala", description = "Actualiza una sala con la informacion enviada"
-	)
+	@Operation(summary = "Actualizar sala", description = "Actualiza una sala con la informacion enviada")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "200", description = "Sala actualizada",
 	content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
@@ -138,7 +129,7 @@ public class RoomController {
 	 * @param id Identificador de la sala a eliminar
 	 * @return ResponseEntity sin contenido
 	 */
-	@Operation(summary = "Eliminar sala", description = "Elimina una sala por su ID")
+	@Operation(summary = "Eliminar sala", description = "Elimina una sala por su ID, endpoint reservado para administradores")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "204", description = "Sala eliminada", content = @Content)
 	@DeleteMapping("/{id}")

@@ -5,6 +5,10 @@ import org.springframework.http.HttpStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Enumeración de respuestas exitosas de la API
+ * @Getter, @RequiredArgsConstructor son anotaciones de Lombok para generar automáticamente los getters y constructores con todos los argumentos
+ */
 @Getter
 @RequiredArgsConstructor
 public enum ApiSuccess {

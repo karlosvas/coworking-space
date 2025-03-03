@@ -1,7 +1,7 @@
 package com.grupo05.coworking_space.enums;
 
 /**
- * Enum for user roles de los usuarios manejado por Spring Security
+ * Enum para definir los roles de usuario en la aplicación con Spring Security (ROLE_USER, ROLE_ADMIN).
  */
 public enum Role {
     ROLE_USER,

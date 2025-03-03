@@ -43,7 +43,7 @@ public class User {
 
 	@NotNull(message = "{field.null}")
 	@NotEmpty(message = "{field.empty}")
-	@Email(message = "{user.email}")
+	@Email(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", message = "{user.email}")
 	@Column(name = "email", nullable = false, length = 100, unique = true)
 	private String email;
 

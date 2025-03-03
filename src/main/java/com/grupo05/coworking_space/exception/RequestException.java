@@ -9,6 +9,15 @@ import com.grupo05.coworking_space.enums.ApiError;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Excepción personalizada para representar errores de petición HTTP.
+ * Esta clase extiende RuntimeException para permitir excepciones no verificadas
+ * y proporciona información estructurada sobre los errores que ocurren durante
+ * el procesamiento de las peticiones.
+ * 
+ * La anotación @Getter de Lombok genera automáticamente métodos getter para todos los campos.
+ * La anotación @Slf4j proporciona un logger para registrar información sobre las excepciones.
+ */
 @Getter
 @Slf4j
 public class RequestException extends RuntimeException {

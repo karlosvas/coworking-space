@@ -9,14 +9,29 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Manejador centralizado de excepciones para la API.
+ * Esta clase intercepta las excepciones lanzadas durante el procesamiento de las peticiones
+ * y las convierte en respuestas HTTP estructuradas y consistentes.
+ * 
+ * La anotación @RestControllerAdvice permite que los métodos de esta clase
+ * se apliquen globalmente a todos los controladores de la aplicación.
+ */
 @RestControllerAdvice
 public class APIExceptionHandler {
+	 /**
+     * Maneja excepciones de validación de argumentos de métodos.
+     * Se activa cuando los datos de entrada no cumplen con las reglas de validación
+     * especificadas por anotaciones como @Valid, @NotNull, etc.
+     * 
+     * @param ex La excepción de validación capturada
+     * @return ResponseEntity con detalles estructurados sobre los errores de validación
+     */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ExceptionDTO> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
 		Map<String, String> errors = new HashMap<>();

@@ -13,10 +13,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configuración de seguridad para la aplicación.
+ * Esta clase define las políticas de seguridad, incluyendo las reglas de autorización,
+ * configuración de filtros y encriptación de contraseñas.
+ * 
+ * La anotación @Configuration indica que esta clase es una fuente de definiciones de beans.
+ * La anotación @EnableWebSecurity habilita la seguridad web de Spring Security.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Configura la cadena de filtros de seguridad para la aplicación.
+     * Define las reglas de acceso a distintos endpoints:
+     * - Rutas públicas: login, registro, documentación Swagger
+     * - Rutas para administradores: gestión de usuarios y operaciones de eliminación
+     * - Resto de rutas: requieren autenticación
+     * 
+     * También se configura la desactivación de CSRF y la adición del filtro JWT.
+     *
+     * @param http Objeto HttpSecurity para configurar la seguridad HTTP
+     * @param jwtRequestFilter Filtro personalizado para procesar tokens JWT
+     * @return La cadena de filtros de seguridad configurada
+     * @throws Exception Si ocurre algún error durante la configuración
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
@@ -39,11 +61,26 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Provee un codificador de contraseñas para la aplicación.
+     * Se utiliza BCrypt, un algoritmo de hashing seguro para almacenar contraseñas.
+     * 
+     * @return Un objeto PasswordEncoder que utiliza el algoritmo BCrypt
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Crea y configura el filtro de peticiones JWT.
+     * Este filtro intercepta las peticiones HTTP y verifica la presencia
+     * y validez de tokens JWT en las cabeceras de autorización.
+     * 
+     * @param jwtUtil Utilidad para operaciones con JWT (generación, validación)
+     * @param userDetailsService Servicio para cargar detalles de usuarios
+     * @return Un filtro JwtRequestFilter configurado
+     */
     @Bean
     public JwtRequestFilter jwtRequestFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         return new JwtRequestFilter(jwtUtil, userDetailsService);

@@ -11,7 +11,6 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -40,6 +39,7 @@ public class EmailAspect {
      * a los participantes de la reunión.
      *
      * @param requestReservationDTO DTO con los datos de la reserva y los participantes.
+     * @see @AfterReturning para indicar que el método se ejecutará después de la ejecución del método.
      */
     @AfterReturning(value = "execution(* com.grupo05.coworking_space.service.ReservationService.createReservation(..)) && args(requestReservationDTO)")
     public void sendNotification(RequestReservationDTO requestReservationDTO) {

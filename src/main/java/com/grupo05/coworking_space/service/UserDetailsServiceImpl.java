@@ -13,6 +13,7 @@ import com.grupo05.coworking_space.utils.JwtUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.module.ResolutionException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -124,7 +125,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @throws NullPointerException Si no se encuentra un usuario con ese ID
      */
     public UserDTO findUserById(int id) {
-        User user = userRepository.findById(id).orElse(null);
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) 
+                throw new RequestException(ApiError.RECORD_NOT_FOUND);
+        User user = userOptional.get();
         log.info("Usuario encontrado: {}", user.getId());
         return userMapper.convertToDTO(user);
     }

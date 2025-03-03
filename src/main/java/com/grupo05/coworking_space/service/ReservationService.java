@@ -5,32 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.grupo05.coworking_space.model.User;
 import com.grupo05.coworking_space.dto.RequestReservationDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.grupo05.coworking_space.dto.ReservationDTO;
 import com.grupo05.coworking_space.dto.UserDTO;
 import com.grupo05.coworking_space.enums.ApiError;
-import com.grupo05.coworking_space.enums.ApiSuccess;
 import com.grupo05.coworking_space.exception.RequestException;
 import com.grupo05.coworking_space.mapper.ReservationMapper;
 import com.grupo05.coworking_space.model.Reservation;
 import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.repository.ReservationRepository;
 import com.grupo05.coworking_space.repository.RoomRepository;
-import com.grupo05.coworking_space.utils.DataResponse;
-import com.grupo05.coworking_space.utils.ResponseHandler;
-import com.grupo05.coworking_space.enums.RoomStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +83,7 @@ public class ReservationService {
             }
 
             if (!verificationSameUser(requestReservationDTO.getReservationDTO().getUserFK())) {
+                System.out.println("El usuario es el mismo");
                 throw new RequestException(ApiError.AUTHENTICATION_FAILED, "Error de permisos",
                         "No puedes crear reservas para otros usuarios");
             }
@@ -360,12 +350,15 @@ public class ReservationService {
      * @return true si es el mismo usuario, false si no lo es
      */
     public boolean verificationSameUser(int id){
-            UserDTO userDTO = userDatailsServiiceImpl.findUserById(id);
-
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if(!userDTO.getUsername().equals(authentication.getName())){
+            try {
+                UserDTO userDTO = userDatailsServiiceImpl.findUserById(id);
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                // Si son el mismo usuario devolvemos true, si no false
+                return userDTO.getUsername().equals(authentication.getName()) ? true : false;
+            } catch (RequestException e) {
+                return false;
+            } catch (Exception e) {
                 return false;
             }
-            return true;
     }
 }
