@@ -53,7 +53,10 @@ Este es un proyecto colaborativo de la comunidad **Bytes Colaborativos**. Si des
 
 ## Documentación
 
-Encontrarás toda la documentación generada por Swagger en la siguiente URL: [http://localhost:8080/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)
+Encontrarás toda la documentación generada por Swagger en la siguiente URL: [http://localhost:8080/swagger-ui.html](http://localhost:8080/api/swagger-ui.html) o en el javadoc generado en la carpeta target/site/apidocs/index.html, para generarlo ejectuar el comand `mvn javadoc:javadoc`
+Para obtener el .jar ejecutable, ejecutar el comando `mvn clean package`
+Para obtener todas las variables de entorno contacte con el equipo de desarrollo, o cree un archivo .env en la raíz del proyecto con las variables especificadas en el archivo .env.example
+El .jar se puede crear utilizando el comando `mvn clean package` y se ejecuta con el comando `java -jar coworking-space-0.0.1-SNAPSHOT.jar`
 
 ### Endpoints 🔗
 
