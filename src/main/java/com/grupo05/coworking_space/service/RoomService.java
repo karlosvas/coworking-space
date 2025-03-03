@@ -133,6 +133,10 @@ public class RoomService {
 	 */
 	public RoomDTO updateRoom(int id, RoomDTO room) {
 		try {
+			// Verifica si ya existe otra sala con el mismo nombre
+			if (roomRepository.existsByNameAndIdNot(room.getName(), id)) {
+				throw new RequestException(ApiError.DUPLICATE_RESOURCE);
+			}
 			Room roomFound = roomMapper.convertToEntity(this.findRoomById(id));
 			roomFound.setId(id);
 			roomFound.setName(room.getName());

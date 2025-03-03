@@ -10,4 +10,6 @@ import com.grupo05.coworking_space.model.Room;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Integer> {
     Optional<Room> findByName(String name);
+
+    boolean existsByNameAndIdNot(String name, int id);
 }
