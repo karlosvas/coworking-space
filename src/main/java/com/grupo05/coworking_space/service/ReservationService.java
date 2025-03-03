@@ -12,12 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.grupo05.coworking_space.model.User;
 import com.grupo05.coworking_space.dto.RequestReservationDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
-
 import com.grupo05.coworking_space.dto.ReservationDTO;
 import com.grupo05.coworking_space.dto.UserDTO;
 import com.grupo05.coworking_space.enums.ApiError;
@@ -29,7 +27,7 @@ import com.grupo05.coworking_space.model.Room;
 import com.grupo05.coworking_space.repository.ReservationRepository;
 import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
-
+import com.grupo05.coworking_space.enums.RoomStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.transaction.Transactional;
@@ -91,7 +89,6 @@ public class ReservationService {
                 throw new RequestException(ApiError.BAD_REQUEST);
             }
 
-
             if(!verificationSameUser(requestReservationDTO.getReservationDTO().getUserFK())){
                 throw new RequestException(ApiError.AUTHENTICATION_FAILED, "Error de permisos", "No puedes crear reservas para otros usuarios");
             }
@@ -102,13 +99,12 @@ public class ReservationService {
             if (!dates.isEmpty())
                 throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
 
-            // TODO: List<String> emailsParticipants = requestReservationDTO.getEmailsParticipants();
-
             Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
             Reservation savedReservation = reservationRepository.save(reservation);
 
             // Obtenemos todas las FK de las habitaciones y las guardamos en la reserva
-            List<Room> rooms = roomMapper.getForeignKeys(reservationDTO.getRoomsFK(), savedReservation);
+            List<Integer> roomsFK = reservationDTO.getRoomsFK();
+            List<Room> rooms = roomMapper.getForeignKeys(roomsFK, savedReservation);
 
             for (Room room : rooms) {
                 // Comprobamos si la habitacion esta disponible y almacenamos la referencia de la reserva en cada habitacion
@@ -116,6 +112,7 @@ public class ReservationService {
                 if (status.equals("BUSY")  || status.equals("MAINTENANCE") || status.equals("NOT AVAILABLE"))
                     throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
                             "Room is not available for reservation, because it is" + status);
+                room.setRoomStatus(RoomStatus.NOT_AVAILABLE);
                 List<Reservation> reservationList = room.getReservations();
                 // No tiene reservas de momento, por lo que creamos una lista de reservas
                 // Si tiene la añaadimos a la lista

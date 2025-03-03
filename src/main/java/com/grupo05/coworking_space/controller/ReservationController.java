@@ -115,7 +115,7 @@ public class ReservationController {
      * @RequestBody Vincula el cuerpo de la solicitud HTTP al parámetro del método
      * @PostMapping Mapea solicitudes HTTP POST a este método
      */
-	@Operation(summary = "Crear reserva", description = "Crea una nueva reserva con la informacion enviada, los FK deven ser valores existentes en la base de datos")
+	@Operation(summary = "Crear reserva", description = "Crea una nueva reserva con la informacion enviada, los FK deven ser valores existentes en la base de datos. IMPORTANTE: las fechas de reserva no puedes ser menores a la fecha actual")
 	@SwaggerApiResponses
 	@ApiResponse(responseCode = "201", description = "Reserva creada",
 			content = @Content(mediaType = "application/json", 

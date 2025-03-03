@@ -19,7 +19,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-
+import com.grupo05.coworking_space.enums.RoomStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,6 +119,7 @@ public class Reservation {
     private void preRemove() {
         // Eliminar this de la lista de reservas de cada sala
         for (Room room : new ArrayList<>(rooms)) {
+            room.setRoomStatus(RoomStatus.AVAILABLE);
             room.getReservations().remove(this);
         }
         // Limpiar la lista de salas
