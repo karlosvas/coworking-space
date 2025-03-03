@@ -98,6 +98,9 @@ public class RoomService {
 		try {
 			Room roomToSave = roomMapper.convertToEntity(room);
 
+			if (roomRepository.findByName(roomToSave.getName()).isPresent()) 
+                throw new RequestException(ApiError.DUPLICATE_RESOURCE);
+
 			Room savedRoom = roomRepository.save(roomToSave);
 
 			log.info("Room created: {}", savedRoom.getId());

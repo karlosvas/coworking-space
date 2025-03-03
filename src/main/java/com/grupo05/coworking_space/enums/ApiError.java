@@ -76,6 +76,10 @@ public enum ApiError {
 			HttpStatus.CONFLICT,
 			"Duplicate Email",
 			"Email already registered"),
+	DUPLICATE_ROOM(
+			HttpStatus.CONFLICT,
+			"Duplicate Room",
+			"Room already registered"),
 	ROOM_NOT_AVAILABLE(
 			HttpStatus.CONFLICT,
 			"Room Not Available",
