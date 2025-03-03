@@ -1,5 +1,6 @@
 package com.grupo05.coworking_space.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.grupo05.coworking_space.enums.RoomStatus;
@@ -12,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

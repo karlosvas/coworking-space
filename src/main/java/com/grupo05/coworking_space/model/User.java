@@ -38,7 +38,6 @@ public class User {
 	@NotNull(message = "{field.null}")
 	@NotEmpty(message = "{field.empty}")
 	@Size(min = 2, message = "{user.username.size}")
-	@Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*$", message = "{user.username.pattern}")
 	@Column(name = "username", nullable = false, length = 50)
 	private String username;
 
@@ -48,13 +47,11 @@ public class User {
 	@Column(name = "email", nullable = false, length = 100, unique = true)
 	private String email;
 
-	//@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{6,}$", message = "${user.password}")
 	@NotNull(message = "{field.null}")
 	@NotEmpty(message = "{field.empty}")
 	@Column(name = "password", nullable = false, length = 255)
 	private String password;
 
-	@NotNull(message = "{field.null}")
 	@Column(name = "role", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private Role role = Role.ROLE_USER;

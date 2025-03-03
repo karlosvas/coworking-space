@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.ArrayList;
@@ -113,7 +112,8 @@ public class UserController {
      */
     @Operation(summary = "Logear usuario", description = "Logea un usuario y genera un token de sesión")
     @SwaggerApiResponses
-    @ApiResponse(responseCode = "200", description = "Login de usuario requiere haberse registrado previamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Login de usuario requiere haberse registrado previamente",
+    content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
     @PostMapping("/login")
     public ResponseEntity<DataResponse> loginUsuario(@RequestBody UserDTO userRequest) {
         // Llamamos a find by username para comprobar si el usuario existe ya que si no lo hace lanzara una excepcion
@@ -134,9 +134,8 @@ public class UserController {
      */
     @Operation(summary = "Recursos del usuario", description = "Obtene todos los recursos de el usuario, como sus reservas actuales")
     @SwaggerApiResponses
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Recursos de el usuario, requiere haver obtenido un token al logearse previamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-    })
+    @ApiResponse(responseCode = "200", description = "Recursos de el usuario, requiere haver obtenido un token al logearse previamente",
+    content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
     @GetMapping("/resources/{id}")
     public ResponseEntity<DataResponse>  findReservationsById(@PathVariable("id") int id) {
         // Obtenemos todas las reservas
@@ -166,9 +165,7 @@ public class UserController {
      */
     @Operation(summary = "Obtener todos los usuarios", description = "Devuelve una lista con todos los usuarios")
     @SwaggerApiResponses
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Recursos de todos los usuarios, solo para administradores", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class))),
-    })
+    @ApiResponse(responseCode = "200", description = "Recursos de todos los usuarios, solo para administradores", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DataResponse.class)))
     @GetMapping("/list")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DataResponse> getAllUsers() {

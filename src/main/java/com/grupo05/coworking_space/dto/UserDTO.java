@@ -27,7 +27,6 @@ public class UserDTO {
     @NotNull(message = "{field.null}")
     @NotEmpty(message = "{field.empty}")
     @Size(min = 2, message = "{user.username.size}")
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*$", message = "{user.username.pattern}")
     private String username;
 
     @Schema(description = "Correo electrónico del usuario", example = "jorge@gmail.com", type = "string", required = true)
@@ -37,7 +36,6 @@ public class UserDTO {
     private String email;
 
     @Schema(description = "Contraseña del usuario", example = "jorge123", type = "string", required = true)
-    //@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{6,}$", message = "${user.password}")
     @NotNull(message = "{field.null}")
     @NotEmpty(message = "{field.empty}")
     private String password;
@@ -47,7 +45,6 @@ public class UserDTO {
 
     @Schema(description = "Rol del usuario", type = "string", required = false, allowableValues = { "ROLE_USER",
             "ROLE_ADMIN" }, defaultValue = "ROLE_USER", hidden = true)
-    @NotNull(message = "{field.null}")
     private Role role;
 
     public UserDTO(int id, String username, String email, String password, Role role) {

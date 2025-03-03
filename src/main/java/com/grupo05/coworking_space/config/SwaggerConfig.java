@@ -6,8 +6,13 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Configuración de Swagger para la documentación de la API.
@@ -34,6 +39,7 @@ import org.springframework.http.HttpHeaders;
     scheme = "bearer",
     bearerFormat = "JWT"
 )
+
 public class SwaggerConfig {
     /**
      * Esta clase no contiene métodos ya que utiliza anotaciones a nivel de clase
@@ -43,4 +49,23 @@ public class SwaggerConfig {
      * - El esquema de seguridad basado en JWT
      * - Los requisitos de autenticación para los endpoints
      */
+
+     // Custom Swagger UI Configuration
+    @Bean
+    public WebMvcConfigurer swagger3Configurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                 // Permitir acceso a recursos estáticos
+                registry.addResourceHandler("/swagger-ui/**")
+                    .addResourceLocations("classpath:/META-INF/resources/webjars/springdoc-openapi-ui/")
+                    .resourceChain(false);
+
+                // Agregar ruta a recursos estáticos personalizados
+                registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/")
+                .resourceChain(false);
+            }
+        };
+    }
 }

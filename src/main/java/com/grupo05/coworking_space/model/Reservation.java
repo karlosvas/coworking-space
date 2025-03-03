@@ -115,10 +115,14 @@ public class Reservation {
         return roomsFK;
     }
 
-     @PreRemove
+    @PreRemove
     private void preRemove() {
-        for (Room r : rooms) {
-            r.setReservation(null);
+        // Eliminar this de la lista de reservas de cada sala
+        for (Room room : new ArrayList<>(rooms)) {
+            room.getReservations().remove(this);
         }
+        // Limpiar la lista de salas
+        rooms.clear();
     }
+
 }
