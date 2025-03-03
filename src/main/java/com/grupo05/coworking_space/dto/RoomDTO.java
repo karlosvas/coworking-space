@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.grupo05.coworking_space.enums.RoomStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.Setter;
 
 /**
  * Objeto de Transferencia de Datos (DTO) para representar y transportar información de salas.
- * 
+ *
  * Implementa Serializable para permitir la serialización de objetos en transmisiones de red.
  * Incluye anotaciones de Lombok para generación automática de métodos y builder.
  * Para más infromacion sobre el dto, ver la documentacion de Swagger en: localhost:8080/api/swagger-ui.html
@@ -38,6 +39,10 @@ public class RoomDTO implements Serializable {
 		type = "string",
 		required = true
 	)
+	@NotNull(message = "{field.null}")
+	@NotEmpty(message = "{field.empty}")
+	@Size(min = 2, max = 20, message = "{room.name.size}")
+	@Pattern(regexp = "^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]*$", message="{room.name.pattern}")
 	private String name;
 
 	@Schema(
@@ -52,8 +57,11 @@ public class RoomDTO implements Serializable {
 		"Not Available"
 	}, type = "string", required = true
 	)
+	@NotNull(message = "{field.null}")
 	private RoomStatus roomStatus;
 
 	@Schema(description = "Capacidad de la sala", example = "10", type = "integer", required = true)
+	@NotNull(message = "{field.null}")
+	@Min(value = 10, message = "{room.min.capacity}")
 	private int capacity;
 }

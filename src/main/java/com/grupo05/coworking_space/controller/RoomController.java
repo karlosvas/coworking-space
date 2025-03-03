@@ -8,8 +8,10 @@ import com.grupo05.coworking_space.utils.DataResponse;
 import com.grupo05.coworking_space.utils.ResponseHandler;
 import com.grupo05.coworking_space.utils.SwaggerExamples;
 
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping(value = "/rooms", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Room", description = "Endpoints para gestionar las salas")
@@ -102,7 +105,7 @@ public class RoomController {
 			examples = { @ExampleObject(value = SwaggerExamples.DataResponseExamples.CREATED_EXAMPLE) }))
 	})
 	@PostMapping
-	public ResponseEntity<DataResponse> createRoom(@RequestBody RoomDTO roomDTO) {
+	public ResponseEntity<DataResponse> createRoom(@Valid @RequestBody RoomDTO roomDTO) {
 		RoomDTO createdRoom = roomService.createRoom(roomDTO);
 
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_CREATED, createdRoom);
@@ -124,7 +127,7 @@ public class RoomController {
 	@PutMapping("/{id}")
 	public ResponseEntity<DataResponse> updateRoom(
 			@PathVariable("id") int id,
-			@RequestBody RoomDTO room) {
+			@Valid @RequestBody RoomDTO room) {
 		RoomDTO updatedRoom = roomService.updateRoom(id, room);
 		return ResponseHandler.handleApiResponse(ApiSuccess.RESOURCE_UPDATED, updatedRoom);
 	}

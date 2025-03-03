@@ -2,6 +2,11 @@ package com.grupo05.coworking_space.dto;
 
 import com.grupo05.coworking_space.enums.ReservationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,22 +30,30 @@ public class ReservationDTO implements Serializable {
     private final int id;
 
 	@Schema(description = "Fecha y hora de inicio de la reserva", example = "2025-02-21T10:00:00", format = "date-time", required = true)
+	@NotNull(message = "{field.null}")
+	@FutureOrPresent(message = "{reservation.date}")
 	private LocalDateTime dateInit;
 
 	@Schema(description = "Fecha y hora de fin de la reserva", example = "2025-02-21T12:00:00", format = "date-time", required = true)
+	@NotNull(message = "{field.null}")
+	@FutureOrPresent(message = "{reservation.date}")
 	private LocalDateTime dateEnd;
 
     @Schema(description = "Estado de la reserva del enum ReservationStatus", allowableValues = {
             "PENDING", "CONFIRMED", "CANCELED", "COMPLETED",
             "Pending", "Confirmed", "Canceled", "Completed" }, type = "string", required = true)
+    @NotNull(message = "{field.null}")
     private ReservationStatus reserveStatus;
 
     @Schema(description = "Descripcion de la reserva", example = "Reserva de sala de reuniones para presentacion de proyecto", type = "string", required = false)
+    @Size(max = 255, message = "{reservation.max.description}")
     private String description;
 
     @Schema(description = "Identificador único para usuarios FK", type = "integer", required = true)
+    @NotNull(message = "{field.null}")
     private int userFK;
 
     @Schema(description = "Identificador único para salas FK", type = "array", required = true)
+    @NotEmpty(message = "{field.empty}")
     private List<Integer> roomsFK;
 }

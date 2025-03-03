@@ -12,11 +12,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,7 +31,6 @@ public class EmailAspect {
     @Autowired
     private RoomService roomService;
 
-    @Autowired
     public EmailAspect(EmailSender emailSender) {
         this.emailSender = emailSender;
     }
