@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -27,7 +26,7 @@ import lombok.Data;
  * @Data es una anotación de Lombok que genera automáticamente los métodos equals, hashCode, toString y otros.
  */
 @Entity(name = "USER")
-@Table(name = "USER", schema = "coworking_space")
+@Table(name = "USERS", schema = "coworking_space")
 @Data
 public class User {
 	@Id
