@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.grupo05.coworking_space.mapper.RoomMapper;
 
-
 /**
  * Servicio para la gestión de reservas de salas.
  * Este servicio proporciona operaciones CRUD para reservas, incluyendo
@@ -61,85 +60,122 @@ public class ReservationService {
      * Constructor para inyección de dependencias.
      *
      * @param reservationRepository Repositorio para operaciones de reservas
-     * @param reservationMapper Mapper para conversión entre entidades y DTOs de reservas
-     * @param roomMapper Mapper para manejar salas relacionadas con reservas
+     * @param reservationMapper     Mapper para conversión entre entidades y DTOs de
+     *                              reservas
+     * @param roomMapper            Mapper para manejar salas relacionadas con
+     *                              reservas
      */
     public ReservationService(ReservationRepository reservationRepository, ReservationMapper reservationMapper,
-            RoomMapper roomMapper, UserDetailsServiceImpl userDatailsServiiceImpl,RoomRepository roomRepository) {
+            RoomMapper roomMapper, UserDetailsServiceImpl userDatailsServiiceImpl, RoomRepository roomRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationMapper = reservationMapper;
         this.roomMapper = roomMapper;
         this.userDatailsServiiceImpl = userDatailsServiiceImpl;
-        this.roomRepository=roomRepository;
+        this.roomRepository = roomRepository;
     }
 
-     /**
+    /**
      * Crea una nueva reserva en el sistema.
-     * Este método garantiza que toda la operación se completa correctamente 
+     * Este método garantiza que toda la operación se completa correctamente
      * o no se realiza ningún cambio (transaccionalidad).
      * Verifica la disponibilidad de las salas y actualiza sus estados.
      *
      * @param requestReservationDTO DTO con los datos de la reserva a crear
      * @return DTO con los datos de la reserva creada, incluyendo su ID
-     * @throws RequestException Si hay un error de validación o las salas no están disponibles
+     * @throws RequestException Si hay un error de validación o las salas no están
+     *                          disponibles
      * @throws RuntimeException Si ocurre cualquier otro error durante el proceso
      * @see Transactional para garantizar la atomicidad de la operación
      */
 
+    /*
+     * @Transactional
+     * public ReservationDTO createReservation(RequestReservationDTO
+     * requestReservationDTO) {
+     * try {
+     * if (requestReservationDTO == null ||
+     * requestReservationDTO.getReservationDTO() == null) {
+     * throw new RequestException(ApiError.BAD_REQUEST);
+     * }
+     * 
+     * if
+     * (!verificationSameUser(requestReservationDTO.getReservationDTO().getUserFK())
+     * ) {
+     * throw new RequestException(ApiError.AUTHENTICATION_FAILED,
+     * "Error de permisos",
+     * "No puedes crear reservas para otros usuarios");
+     * }
+     * 
+     * ReservationDTO reservationDTO = requestReservationDTO.getReservationDTO();
+     * List<ReservationDTO> dates =
+     * this.findReservationsBetweenDates(reservationDTO.getDateInit(),
+     * reservationDTO.getDateEnd());
+     * 
+     * if (!dates.isEmpty()) {
+     * throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
+     * }
+     * 
+     * List<Integer> roomsFK = reservationDTO.getRoomsFK();
+     * List<Room> rooms = roomMapper.getForeignKeys(roomsFK, null);
+     * 
+     * if (rooms.isEmpty()) {
+     * throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
+     * "No rooms found for the given IDs");
+     * }
+     * 
+     * // Verificar disponibilidad antes de crear la reserva
+     * for (Room room : rooms) {
+     * String status = room.getRoomStatus().getState().toUpperCase();
+     * if (status.equals("BUSY") || status.equals("MAINTENANCE") ||
+     * status.equals("NOT AVAILABLE")) {
+     * throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
+     * "Room is not available for reservation because it is " + status);
+     * }
+     * }
+     * 
+     * // Convertir y guardar la reserva, ya que sabemos que todo es válido
+     * Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
+     * Reservation savedReservation = reservationRepository.save(reservation);
+     * 
+     * // Asociar habitaciones a la reserva
+     * for (Room room : rooms) {
+     * if (room.getReservations() == null) {
+     * room.setReservations(new ArrayList<>());
+     * }
+     * room.getReservations().add(savedReservation);
+     * roomRepository.save(room);
+     * }
+     * 
+     * savedReservation.setRooms(rooms);
+     * savedReservation = reservationRepository.save(savedReservation);
+     * 
+     * log.info("Reserva creada: {}", savedReservation.getId());
+     * return reservationMapper.convertToDTO(savedReservation);
+     * } catch (RequestException e) {
+     * log.error("Error en la reserva: ", e);
+     * throw e;
+     * } catch (Exception e) {
+     * log.error("Error inesperado en la creación de la reserva", e);
+     * throw new RuntimeException("Error en la creación de la reserva: " +
+     * e.getMessage(), e);
+     * }
+     * }
+     */
     @Transactional
     public ReservationDTO createReservation(RequestReservationDTO requestReservationDTO) {
         try {
-            if (requestReservationDTO == null || requestReservationDTO.getReservationDTO() == null) {
-                throw new RequestException(ApiError.BAD_REQUEST);
-            }
-
-            if (!verificationSameUser(requestReservationDTO.getReservationDTO().getUserFK())) {
-                throw new RequestException(ApiError.AUTHENTICATION_FAILED, "Error de permisos",
-                        "No puedes crear reservas para otros usuarios");
-            }
+            validateRequest(requestReservationDTO);
 
             ReservationDTO reservationDTO = requestReservationDTO.getReservationDTO();
-            List<ReservationDTO> dates = this.findReservationsBetweenDates(reservationDTO.getDateInit(), reservationDTO.getDateEnd());
 
-            if (!dates.isEmpty()) {
-                throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
-            }
+            validateDateAvailability(reservationDTO);
+            List<Room> rooms = validateRoomsAvailability(reservationDTO.getRoomsFK());
 
-            List<Integer> roomsFK = reservationDTO.getRoomsFK();
-            List<Room> rooms = roomMapper.getForeignKeys(roomsFK, null);
-
-            if (rooms.isEmpty()) {
-                throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
-                        "No rooms found for the given IDs");
-            }
-
-            // Verificar disponibilidad antes de crear la reserva
-            for (Room room : rooms) {
-                String status = room.getRoomStatus().getState().toUpperCase();
-                if (status.equals("BUSY") || status.equals("MAINTENANCE") || status.equals("NOT AVAILABLE")) {
-                    throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
-                            "Room is not available for reservation because it is " + status);
-                }
-            }
-
-            // Convertir y guardar la reserva, ya que sabemos que todo es válido
-            Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
-            Reservation savedReservation = reservationRepository.save(reservation);
-
-            // Asociar habitaciones a la reserva
-            for (Room room : rooms) {
-                if (room.getReservations() == null) {
-                    room.setReservations(new ArrayList<>());
-                }
-                room.getReservations().add(savedReservation);
-                roomRepository.save(room);
-            }
-
-            savedReservation.setRooms(rooms);
-            savedReservation = reservationRepository.save(savedReservation);
+            Reservation savedReservation = saveReservationWithRooms(reservationDTO, rooms);
 
             log.info("Reserva creada: {}", savedReservation.getId());
             return reservationMapper.convertToDTO(savedReservation);
+
         } catch (RequestException e) {
             log.error("Error en la reserva: ", e);
             throw e;
@@ -175,7 +211,8 @@ public class ReservationService {
     }
 
     /**
-     * Obtiene todas las reservas existentes en el sistema, que pertenezcan al usuario logueado.
+     * Obtiene todas las reservas existentes en el sistema, que pertenezcan al
+     * usuario logueado.
      *
      * @return Lista de DTOs con los datos de todas las reservas
      * @throws RuntimeException Si ocurre algún error durante la búsqueda
@@ -184,12 +221,12 @@ public class ReservationService {
         try {
             // Obtenemos todas las reservas, las convertimos a DTO y las retornamos
             List<Reservation> reservations = reservationRepository.findAll();
-            List<Reservation> filterReservations= new ArrayList<>();
+            List<Reservation> filterReservations = new ArrayList<>();
             for (Reservation reservation : reservations) {
                 int id = reservation.getUserFK();
-                if(verificationSameUser(id)){
+                if (verificationSameUser(id)) {
                     filterReservations.add(reservation);
-                }   
+                }
             }
 
             // Verificar que solo se muestren las reservas del usuario que hizo la consulta
@@ -211,104 +248,166 @@ public class ReservationService {
      * @param id
      * @return
      */
-    public List<ReservationDTO>  findAllReservations(@PathVariable("id") int id) {
-        try{
+    public List<ReservationDTO> findAllReservations(@PathVariable("id") int id) {
+        try {
             // Obtenemos todas las reservas
             List<ReservationDTO> allReservations = reservationRepository.findAll().stream()
-            .map(reservationMapper::convertToDTO)
-            .collect(Collectors.toList());
-            
+                    .map(reservationMapper::convertToDTO)
+                    .collect(Collectors.toList());
+
             // Creamos una nueva lista para almacenar las reservas del usuario
             List<ReservationDTO> newAllReservation = new ArrayList<>();
-            
-            // Comprobamos si la reserva pertenece al usuario, si es asi la añadimos a la lista
-            for (ReservationDTO reservationDTO : allReservations) 
-            if (reservationDTO.getUserFK() == id) 
-            newAllReservation.add(reservationDTO);
-            
+
+            // Comprobamos si la reserva pertenece al usuario, si es asi la añadimos a la
+            // lista
+            for (ReservationDTO reservationDTO : allReservations)
+                if (reservationDTO.getUserFK() == id)
+                    newAllReservation.add(reservationDTO);
+
             return newAllReservation;
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener las reservas: " + e.getMessage());
         }
     }
 
-     /**
+    /**
      * Actualiza los datos de una reserva existente.
      *
      * @param reservationDTO DTO con los nuevos datos de la reserva
-     * @param id ID de la reserva a actualizar
+     * @param id             ID de la reserva a actualizar
      * @return DTO con los datos actualizados de la reserva
      * @throws RequestException Si la reserva no existe o hay un error de validación
-     * @throws RuntimeException Si ocurre cualquier otro error durante la actualización
+     * @throws RuntimeException Si ocurre cualquier otro error durante la
+     *                          actualización
      */
-    public ReservationDTO updateResevation(ReservationDTO reservationDTO) {
+
+    /*
+     * public ReservationDTO updateResevation(ReservationDTO reservationDTO) {
+     * try {
+     * // Comprobamos si los datos de la reserva son invalidos
+     * if (reservationDTO == null)
+     * throw new RequestException(ApiError.BAD_REQUEST);
+     * 
+     * // Obtenemos la reserva por su ID, lo convertimos a dto, no comprabamos que
+     * // exista porque ya lo controla
+     * // el metodo findReservationByID por ello se controla en el catch
+     * ReservationDTO optionalReservation =
+     * this.findReservationByID(reservationDTO.getId());
+     * 
+     * // Obtenemos el DTO de la reserva que se quiere actualizar
+     * Reservation updateReservation =
+     * reservationMapper.convertToEntity(optionalReservation);
+     * 
+     * // Actualizamos los datos de la reserva
+     * updateReservation.setId(reservationDTO.getId());
+     * updateReservation.setDateInit(reservationDTO.getDateInit());
+     * updateReservation.setDateEnd(reservationDTO.getDateEnd());
+     * updateReservation.setReserveStatus(reservationDTO.getReserveStatus());
+     * updateReservation.setDescription(reservationDTO.getDescription());
+     * // Convertimos el DTO de la reserva a una entidad para pdoer obtener el user
+     * // asociado
+     * updateReservation.setUser(reservationMapper.convertToEntity(reservationDTO).
+     * getUser());
+     * 
+     * // Obtenemos las habitaciones asociadas a la reserva y las guardamos en la
+     * // reserva
+     * List<Room> rooms = roomMapper.getForeignKeys(reservationDTO.getRoomsFK(),
+     * updateReservation);
+     * 
+     * if (rooms.isEmpty())
+     * throw new RequestException(ApiError.CONFLICT, "Room Not Found",
+     * "Reservation is not updated, because dont found the room");
+     * 
+     * updateReservation.setRooms(rooms);
+     * // Lo guardamos en la base de datos
+     * Reservation savedReservation = reservationRepository.save(updateReservation);
+     * 
+     * log.info("Reserva actualizada: {}" + savedReservation.getId());
+     * return reservationMapper.convertToDTO(savedReservation);
+     * } catch (RequestException e) {
+     * throw e;
+     * } catch (Exception e) {
+     * throw new RuntimeException("Error al actualizar la reserva: " +
+     * e.getMessage());
+     * }
+     * }
+     */
+
+    public ReservationDTO updateReservation(ReservationDTO reservationDTO) {
         try {
-            // Comprobamos si los datos de la reserva son invalidos
             if (reservationDTO == null)
                 throw new RequestException(ApiError.BAD_REQUEST);
 
-            // Obtenemos la reserva por su ID, lo convertimos a dto, no comprabamos que exista porque ya lo controla
-            // el metodo findReservationByID por ello se controla en el catch
-            ReservationDTO optionalReservation = this.findReservationByID(reservationDTO.getId());
+            // Buscar la reserva existente
+            Reservation updateReservation = reservationRepository.findById(reservationDTO.getId())
+                    .orElseThrow(() -> new RequestException(ApiError.RECORD_NOT_FOUND));
 
-            // Obtenemos el DTO de la reserva que se quiere actualizar
-            Reservation updateReservation = reservationMapper.convertToEntity(optionalReservation);
+            // Validar que el usuario autenticado sea el mismo que intenta modificar
+            if (!verificationSameUser(reservationDTO.getUserFK())) {
+                throw new RequestException(ApiError.AUTHENTICATION_FAILED, "Error de permisos",
+                        "No puedes modificar reservas de otros usuarios");
+            }
 
-            // Actualizamos los datos de la reserva
-            updateReservation.setId(reservationDTO.getId());
+            // Validar conflictos de fecha (excluyendo la reserva actual)
+            List<ReservationDTO> existingReservations = this.findReservationsBetweenDates(
+                    reservationDTO.getDateInit(), reservationDTO.getDateEnd());
+
+            boolean hayConflictos = existingReservations.stream()
+                    .anyMatch(r -> !(r.getId() == reservationDTO.getId()));
+            if (hayConflictos) {
+                throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
+            }
+
+            // Validar estado de las salas
+            List<Room> rooms = validateRoomsAvailability(reservationDTO.getRoomsFK());
+
+            // Actualizar campos necesarios
             updateReservation.setDateInit(reservationDTO.getDateInit());
             updateReservation.setDateEnd(reservationDTO.getDateEnd());
             updateReservation.setReserveStatus(reservationDTO.getReserveStatus());
             updateReservation.setDescription(reservationDTO.getDescription());
-            // Convertimos el DTO de la reserva a una entidad para pdoer obtener el user asociado
             updateReservation.setUser(reservationMapper.convertToEntity(reservationDTO).getUser());
-            
-            // Obtenemos las habitaciones asociadas a la reserva y las guardamos en la reserva
-            List<Room> rooms = roomMapper.getForeignKeys(reservationDTO.getRoomsFK(), updateReservation);
-
-            if(rooms.isEmpty())
-                throw new RequestException(ApiError.CONFLICT, "Room Not Found",
-                            "Reservation is not updated, because dont found the room");
-
             updateReservation.setRooms(rooms);
-            // Lo guardamos en la base de datos
-            Reservation savedReservation = reservationRepository.save(updateReservation);
 
-            log.info("Reserva actualizada: {}" + savedReservation.getId());
+            Reservation savedReservation = reservationRepository.save(updateReservation);
+            log.info("Reserva actualizada: {}", savedReservation.getId());
+
             return reservationMapper.convertToDTO(savedReservation);
-        }catch (RequestException e) {
+        } catch (RequestException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error al actualizar la reserva: " + e.getMessage());
         }
     }
 
-     /**
+    /**
      * Elimina una reserva del sistema por su ID.
      *
      * @param id ID de la reserva a eliminar
      * @throws RequestException Si la reserva no existe
-     * @throws RuntimeException Si ocurre cualquier otro error durante la eliminación
+     * @throws RuntimeException Si ocurre cualquier otro error durante la
+     *                          eliminación
      */
     public void deleteReservation(int id) {
         try {
-             // Obtenemos la reserva por su ID, lo convertimos a dto, no comprabamos que exista porque ya lo controla
+            // Obtenemos la reserva por su ID, lo convertimos a dto, no comprabamos que
+            // exista porque ya lo controla
             // el catch, eliminamos la reserva encontrada en la base de datos
             ReservationDTO reservationDTO = this.findReservationByID(id);
             reservationRepository.deleteById(reservationDTO.getId());
             log.info("Reserva eliminada: {}", reservationDTO.getId());
-        }catch (RequestException e) {
+        } catch (RequestException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error al eliminar la reserva: " + e.getMessage());
         }
     }
 
-     /**
+    /**
      * Busca reservas dentro de un rango de fechas específico.
      *
      * @param dateInit Fecha inicial del rango de búsqueda
-     * @param dateEnd Fecha final del rango de búsqueda
+     * @param dateEnd  Fecha final del rango de búsqueda
      * @return Lista de DTOs con las reservas encontradas dentro del rango de fechas
      * @throws RequestException Si hay un error de acceso a datos o un error interno
      */
@@ -331,17 +430,20 @@ public class ReservationService {
      * 
      * @param id id del usuario que se dessea eliminar las reservas
      * @return DTO con los datos del usuario actualizado
-     * @throws RequestException Si no se encuentra el usuario con el ID proporcionado
-     * @throws RuntimeException Si ocurre otro tipo de error durante la actualización
+     * @throws RequestException Si no se encuentra el usuario con el ID
+     *                          proporcionado
+     * @throws RuntimeException Si ocurre otro tipo de error durante la
+     *                          actualización
      */
     public void deleteAllReservationsByUser(int id) {
         try {
-           List<Reservation> reservations = reservationRepository.findAll();
+            List<Reservation> reservations = reservationRepository.findAll();
 
             for (Reservation actualReservation : reservations) {
-                if(actualReservation.getUserFK() == id){
+                if (actualReservation.getUserFK() == id) {
                     this.deleteReservation(actualReservation.getId());
-                    log.info("Reserva eliminada: {}, de el usurio {}", actualReservation.getId(), actualReservation.getUserFK());
+                    log.info("Reserva eliminada: {}, de el usurio {}", actualReservation.getId(),
+                            actualReservation.getUserFK());
                 }
             }
 
@@ -354,18 +456,75 @@ public class ReservationService {
     }
 
     /**
-     * Verifica si el usuario que esta logueado es el mismo que el que se esta buscando
+     * Verifica si el usuario que esta logueado es el mismo que el que se esta
+     * buscando
      * 
      * @param id
      * @return true si es el mismo usuario, false si no lo es
      */
-    public boolean verificationSameUser(int id){
-            UserDTO userDTO = userDatailsServiiceImpl.findUserById(id);
+    public boolean verificationSameUser(int id) {
+        UserDTO userDTO = userDatailsServiiceImpl.findUserById(id);
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if(!userDTO.getUsername().equals(authentication.getName())){
-                return false;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!userDTO.getUsername().equals(authentication.getName())) {
+            return false;
+        }
+        return true;
+    }
+
+    private void validateRequest(RequestReservationDTO requestDTO) {
+        if (requestDTO == null || requestDTO.getReservationDTO() == null) {
+            throw new RequestException(ApiError.BAD_REQUEST);
+        }
+
+        if (!verificationSameUser(requestDTO.getReservationDTO().getUserFK())) {
+            throw new RequestException(ApiError.AUTHENTICATION_FAILED, "Error de permisos",
+                    "No puedes crear reservas para otros usuarios");
+        }
+    }
+
+    private void validateDateAvailability(ReservationDTO reservationDTO) {
+        List<ReservationDTO> existingReservations = this.findReservationsBetweenDates(
+                reservationDTO.getDateInit(), reservationDTO.getDateEnd());
+
+        if (!existingReservations.isEmpty()) {
+            throw new RequestException(ApiError.DATE_NOT_AVAILABLE);
+        }
+    }
+
+    private List<Room> validateRoomsAvailability(List<Integer> roomsFK) {
+        List<Room> rooms = roomMapper.getForeignKeys(roomsFK, null);
+
+        if (rooms.isEmpty()) {
+            throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
+                    "No rooms found for the given IDs");
+        }
+
+        for (Room room : rooms) {
+            String status = room.getRoomStatus().getState().toUpperCase();
+            if (status.equals("BUSY") || status.equals("MAINTENANCE") || status.equals("NOT AVAILABLE")) {
+                throw new RequestException(ApiError.ROOM_NOT_AVAILABLE, "Room Not Available",
+                        "Room is not available for reservation because it is " + status);
             }
-            return true;
+        }
+
+        return rooms;
+    }
+
+    private Reservation saveReservationWithRooms(ReservationDTO reservationDTO, List<Room> rooms) {
+        Reservation reservation = reservationMapper.convertToEntity(reservationDTO);
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        // Asignar habitaciones a la reserva
+        for (Room room : rooms) {
+            if (room.getReservations() == null) {
+                room.setReservations(new ArrayList<>());
+            }
+            room.getReservations().add(savedReservation);
+        }
+
+        roomRepository.saveAll(rooms);
+        savedReservation.setRooms(rooms);
+        return reservationRepository.save(savedReservation);
     }
 }
